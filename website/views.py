@@ -11,8 +11,6 @@ def redirect_home():
 
 @views.route("/")
 def landing():
-    if current_user.is_authenticated:
-        return redirect_home()
     return render_template("landing.html")
 
 @views.route("/job-seekers")
