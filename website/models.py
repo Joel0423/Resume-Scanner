@@ -20,6 +20,10 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"<User {self.name} ({self.email})>"
     
+    # because we named the id as 'user_id' instead of default 'id'
+    def get_id(self):
+           return (self.user_id)
+    
 class JobSeeker(db.Model):
     __tablename__ = 'JOBSEEKERS'
 

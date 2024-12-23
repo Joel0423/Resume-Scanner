@@ -2,11 +2,16 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import JobSeeker, Recruiter, User
 from . import db # from __init__.py
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, login_required, logout_user, current_user
+from .views import redirect_home
 
 auth_views =  Blueprint('auth_views', __name__)
 
 @auth_views.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect_home()
+    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -16,10 +21,8 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Login Success', category="login-success")
 
-                if user.role == "recruiter":
-                    return redirect(url_for("views.recruiter_home"))
-                elif user.role == "job-seeker":
-                    return redirect(url_for("views.job_seeker_home"))
+                login_user(user, remember=True)
+                return redirect_home()
             else:
                 flash('Login Failed, wrong password', category="login-error")
         else:
@@ -28,18 +31,22 @@ def login():
     return render_template("login.html")
 
 @auth_views.route('/logout')
+@login_required
 def logout():
-    return "<p>logout</p>"
+    logout_user()
+    return redirect(url_for('views.landing'))
 
 @auth_views.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    if current_user.is_authenticated:
+        return redirect_home()
+    
     if request.method == "POST":
         
         email = request.form.get('email')
         name = request.form.get('name')
         password = request.form.get('password')
         phone = request.form.get('phone')
-        company = request.form.get('company')
         address = request.form.get('address')
         about = request.form.get('about')
         profile_pic = request.form.get('profile-pic')
@@ -65,8 +72,7 @@ def sign_up():
         db.session.commit()
 
         flash("account created", category="sign-up-success")
-        return redirect(url_for('views.landing'))
-
-
+        login_user(new_user, remember=True)
+        return redirect_home()
 
     return render_template("sign-up.html")
