@@ -5,4 +5,6 @@
 #to run-
 open the resume-scanner folder
 
-```flask --app res_scanner run --debug```
+```flask --app main run --debug```
+
+or- run the main.py file
