@@ -9,7 +9,7 @@ open the resume-scanner folder
 create a file- config.py  
 paste this-  
 ```DB_USERNAME = "root"```
-```DB_PASSWORD = "pass123"```
+```DB_PASSWORD = ""```
 ```DB_HOST = "localhost"```
 ```DB_NAME = "resume_scanner_db"```
 ```DB_PORT = "3306"```
