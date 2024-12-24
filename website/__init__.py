@@ -2,19 +2,15 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from config import SQLALCHEMY_DATABASE_URI
 
 db = SQLAlchemy()
-DB_NAME = "resume_scanner_db"
-DB_USERNAME = "root"
-DB_PASSWORD = "pass123"
-
-
 
 def create_app():
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = "Joe nd Maha"
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@localhost/{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     db.init_app(app)
     
     # views for the application
