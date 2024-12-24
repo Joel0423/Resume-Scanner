@@ -1,3 +1,3 @@
-#test file 1
-Joel A
-using git fetch 
+trying to resolve merge conflict 
+in line 2
+amd line 3
