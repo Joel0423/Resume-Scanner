@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Sign-Up Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .input-field {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-field:focus {
+      border-color: #fbbf24;
+    }
+
+    .status-icon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      display: none;
+    }
+
+    .success-icon {
+      color: #10b981;
+      /* Green */
+    }
+
+    .error-icon {
+      color: #ef4444;
+      /* Red */
+    }
+  </style>
+</head>
+
+<body class="bg-amber-50 flex justify-center items-center min-h-screen">
+  <div class="max-w-2xl w-full bg-white shadow-lg rounded-lg p-8">
+    <!-- Top Banner -->
+    <img class="w-full h-[300px] object-cover rounded-t-lg mb-8" src="static/images/RSignUp.png" alt="Banner">
+
+    <!-- Form Title -->
+    <h2 class="text-3xl font-bold text-center text-amber-600 mb-6">Sign Up</h2>
+
+    <!-- Sign-Up Form -->
+    <form id="signupForm">
+      <!-- Name -->
+      <div class="mb-4 relative">
+        <label for="name" class="block black-600 mb-2">Full Name</label>
+        <div class="relative">
+          <i class="fas fa-user absolute top-3 left-3 text-gray-400"></i>
+          <input type="text" id="name" name="name" placeholder="Enter your name" class="input-field pl-10">
+          <i id="nameStatus" class="status-icon"></i>
+        </div>
+        <p id="nameError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-4 relative">
+        <label for="email" class="block black-600 mb-2">Email</label>
+        <div class="relative">
+          <i class="fas fa-envelope absolute top-3 left-3 text-gray-400"></i>
+          <input type="email" id="email" name="email" placeholder="Enter your email" class="input-field pl-10">
+          <i id="emailStatus" class="status-icon"></i>
+        </div>
+        <p id="emailError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-4 relative">
+        <label for="password" class="block black-600 mb-2">Password</label>
+        <div class="relative">
+          <i class="fas fa-lock absolute top-3 left-3 text-gray-400"></i>
+          <input type="password" id="password" name="password" placeholder="Enter your password"
+            class="input-field pl-10">
+          <i id="togglePassword" class="fas fa-eye absolute top-3 right-3 cursor-pointer"></i>
+          <i id="passwordStatus" class="status-icon"></i>
+        </div>
+        <p id="passwordError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-4 relative">
+        <label for="phone" class="block black-600 mb-2">Phone Number</label>
+        <div class="relative">
+          <i class="fas fa-phone absolute top-3 left-3 text-gray-400"></i>
+          <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit phone number" class="input-field pl-10">
+          <i id="phoneStatus" class="status-icon"></i>
+        </div>
+        <p id="phoneError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- DOB -->
+      <div class="mb-4 relative">
+        <label for="dob" class="block black-600 mb-2">Date of Birth</label>
+        <div class="relative">
+          <i class="fas fa-calendar-alt absolute top-3 left-3 text-gray-400"></i>
+          <input type="date" id="dob" name="dob" class="input-field pl-10">
+          <i id="dobStatus" class="status-icon"></i>
+        </div>
+        <p id="dobError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- Company Name -->
+      <div class="mb-4 relative">
+        <label for="company" class="block black-600 mb-2">Company Name</label>
+        <div class="relative">
+          <i class="fas fa-building absolute top-3 left-3 text-gray-400"></i>
+          <input type="text" id="company" name="company" placeholder="Enter your company name"
+            class="input-field pl-10">
+          <i id="companyStatus" class="status-icon"></i>
+        </div>
+        <p id="companyError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- Company Address -->
+      <div class="mb-6">
+        <label for="address" class="block black-600 mb-2">Company Address</label>
+        <textarea id="address" name="address" rows="3" class="input-field"
+          placeholder="Enter your company address"></textarea>
+        <p id="addressError" class="text-xs text-red-500 hidden"></p>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="w-full bg-amber-700 text-white py-2 px-4 rounded-md hover:bg-amber-800">
+        Sign Up
+      </button>
+    </form>
+  </div>
+
+  <script src="static/javascript/RSignUp.js"></script>
+</body>
+
+</html>

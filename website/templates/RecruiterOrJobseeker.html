@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter or Jobseeker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="static/javascript/RecruiterOrJobseeker.js" defer></script>
+    <style>
+        .amber-shades-bg {
+            background-color: #FFBF47;
+            /* Light Amber */
+        }
+
+        .amber-shades-btn {
+            background-color: #C97B33;
+        }
+
+        .amber-shades-btn:hover {
+            background-color: #B56B29;
+        }
+    </style>
+</head>
+
+<body class="bg-amber-50">
+
+    <div class="flex justify-center items-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-md h-96 max-w-3xl w-full">
+            <div class="flex items-center justify-between h-full">
+                <div class="w-1/2 pr-8">
+                    <img src="static/images/ReJob.avif" alt="Image" class="w-full rounded-lg">
+                </div>
+                <!-- Right section (center aligned) -->
+                <div class="w-1/2 flex flex-col items-center justify-center text-center">
+                    <h1 class="text-3xl font-semibold text-amber-800 mb-6">Choose Your Role</h1>
+
+                    <!-- Container for radio buttons in a straight line -->
+                    <div class="flex space-x-8 mb-4">
+                        <!-- Recruiter radio button -->
+                        <div class="flex items-center">
+                            <input type="radio" id="recruiter" name="role" value="recruiter" class="mr-2">
+                            <label for="recruiter" class="text-xl text-amber-800">Recruiter</label>
+                        </div>
+
+                        <!-- Jobseeker radio button -->
+                        <div class="flex items-center">
+                            <input type="radio" id="jobseeker" name="role" value="jobseeker" class="mr-2">
+                            <label for="jobseeker" class="text-xl text-amber-800">Jobseeker</label>
+                        </div>
+                    </div>
+
+                    <button id="submit-btn" class="amber-shades-btn text-white font-bold mt-6 py-2 px-6 rounded-md">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
