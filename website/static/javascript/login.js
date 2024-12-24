@@ -3,6 +3,7 @@ function togglePassword() {
   const passwordField = document.getElementById("password");
   const eyeIcon = document.getElementById("eyeIcon");
 
+
   // Toggle password type and eye icon
   if (passwordField.type === "password") {
     passwordField.type = "text";
@@ -18,6 +19,7 @@ function togglePassword() {
 function validateForm() {
   const username = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
+  const form = document.getElementById("loginForm");
 
   if (!username) {
     alert("Please enter your email");
@@ -28,5 +30,5 @@ function validateForm() {
     return;
   }
 
-  alert("Login Successful!");
+  form.submit();
 }

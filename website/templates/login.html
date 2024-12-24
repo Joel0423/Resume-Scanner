@@ -15,13 +15,13 @@
   <div class="bg-white rounded-lg overflow-hidden shadow-lg p-6 flex w-full h-[500px] max-w-[1000px] custom-form">
     <!-- Left Section: Image -->
     <div class="w-1/2 hidden md:block pr-6">
-      <img src="images/login.jpg" alt="Person working" class="h-full w-full object-cover" />
+      <img src="static/images/login.jpg" alt="Person working" class="h-full w-full object-cover" />
     </div>
     <!-- Right Section: Login Form -->
     <div class="w-full md:w-1/2 flex items-center justify-center">
       <div class="w-full">
         <h1 class="text-3xl font-bold mb-6 text-center">Log In</h1>
-        <form id="loginForm" class="space-y-4">
+        <form id="loginForm" class="space-y-4" action="/login" method="post">
           <!-- email -->
           <div>
             <div class="flex items-center border-b border-black-300">
