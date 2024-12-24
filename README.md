@@ -1,4 +1,4 @@
-#setup-  
+#setup- open the terminal in the cloned repository
 
 ```python -m venv .venv```  
 ```pip install -r requirements.txt```
