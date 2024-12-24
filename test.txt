@@ -1,2 +1,3 @@
 #test file 1
 Joel A
+using git fetch 
