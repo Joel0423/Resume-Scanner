@@ -126,5 +126,5 @@ def jobseek_upload():
     # GET request - render the upload form
     if request.method == 'GET':
         if current_user.role == 'job-seeker':
-            return render_template("jobseek_upload.html")
+            return render_template("job_seek_upload.html")
         return render_template("recruiter_home.html")

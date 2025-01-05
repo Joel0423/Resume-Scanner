@@ -70,7 +70,7 @@ def j_sign_up():
         login_user(new_user, remember=True)
         return redirect_home()
 
-    return render_template("JSignUp.html")
+    return render_template("j_sign_up.html")
 
 @auth_views.route('/r-sign-up', methods=['GET', 'POST'])
 def r_sign_up():
@@ -105,11 +105,11 @@ def r_sign_up():
         login_user(new_user, remember=True)
         return redirect_home()
 
-    return render_template("RSignUp.html")
+    return render_template("r_sign_up.html")
 
 @auth_views.route('/recruiter-or-jobseeker', methods=['GET'])
 def recruiter_or_jobseeker():
     if current_user.is_authenticated:
         return redirect_home()
     
-    return render_template('RecruiterOrJobseeker.html')
+    return render_template('recruit_or_jobseek.html')
