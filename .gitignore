@@ -14,3 +14,5 @@ build/
 *.egg-info/
 
 config.py
+
+uploaded_resumes/
