@@ -30,6 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  document.getElementById("logout-link").addEventListener("click", function (e) {
+    e.preventDefault(); // Prevent default action of anchor tag
+  
+    // Clear tokens/session storage or cookies
+    localStorage.removeItem("authToken"); // Example for JWT
+    sessionStorage.clear();
+  
+    // Redirect user to login page or home
+    window.location.href = "/templates/landing.html";
+  });
+
   // Fetch profile data when the page loads
   fetchProfileSummary();
 
