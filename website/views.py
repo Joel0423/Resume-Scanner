@@ -4,6 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 from .models import JobSeekerScoringWeights
 from . import db
+from .jobseeker_scoring import calculate_resume_score
 
 views =  Blueprint('views', __name__)
 
@@ -43,7 +44,6 @@ def jobseek_upload():
         # Get the form data
         job_description = request.form.get('job_description')
         skills = request.form.getlist('skills-section[]')  # Assuming dynamic skills are sent as a list
-        print("skills")
         skill_weights = request.form.getlist('skills-section_weight[]')
         skills_data = {skills[i]: int(skill_weights[i]) for i in range(len(skills))}
 
@@ -114,10 +114,16 @@ def jobseek_upload():
 
         # Save to the database
         try:
+            test = scoring_weights
             db.session.add(scoring_weights)
             db.session.commit()
             flash("Scoring weights and resume uploaded successfully.", "success")
-            return redirect(url_for('views.jobseek_upload'))
+            
+            calculate_resume_score(resume_file_path, job_description, scoring_weights)
+
+            return redirect(url_for('views.jobseek_result'))
+        
+            
         except Exception as e:
             db.session.rollback()
             flash(f"An error occurred: {str(e)}", "error")
@@ -128,3 +134,9 @@ def jobseek_upload():
         if current_user.role == 'job-seeker':
             return render_template("job_seek_upload.html")
         return render_template("recruiter_home.html")
+
+
+@views.route("/jobseek-result", methods=['GET', 'POST'])
+@login_required
+def jobseek_result():
+    return render_template("job_seek_result.html")

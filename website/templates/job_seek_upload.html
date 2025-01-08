@@ -45,6 +45,13 @@
             `;
             container.appendChild(div);
         }
+        window.onload = function () {
+            addField('skills-section', 'Skill', 'Weight (0-5)');
+            addSpecificDegreeField();
+            addFallbackDegreeField();
+            addField('places-section', 'Company Name', 'Weight (0-5)');
+        }
+
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
