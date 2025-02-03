@@ -58,88 +58,94 @@
 
 <body class="bg-gray-100 p-6">
     <h1 class="text-2xl font-bold mb-4">Job Description Form</h1>
-    <form class="bg-white shadow-md rounded p-6" action="/jobseek-upload" method="post" enctype="multipart/form-data">
-        <div class="mb-4">
-            <label for="job-description" class="block text-gray-700 font-medium">Job Description:</label><br>
-            <textarea id="job-description" name="job_description" class="border rounded w-full p-2" required></textarea>
-        </div>
+    <div class="form_div flex justify-center ">
+        <form class="bg-white shadow-md rounded p-6 w-2/3" action="/jobseek-upload" method="post"
+            enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="job-description" class="block text-gray-700 font-medium">Job Description:</label><br>
+                <textarea id="job-description" name="job_description" class="border rounded w-full p-2"
+                    required></textarea>
+            </div>
 
-        <div class="mb-4">
-            <label for="resume" class="block text-gray-700 font-medium">Resume File:</label><br>
-            <input type="file" id="resume" name="resume_file" class="border rounded w-full p-2" required>
-        </div>
+            <div class="mb-4">
+                <label for="resume" class="block text-gray-700 font-medium">Resume File:</label><br>
+                <input type="file" id="resume" name="resume_file" class="border rounded w-full p-2" required>
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Skills</h3>
-            <div id="skills-section"></div>
-            <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
-                onclick="addField('skills-section', 'Skill', 'Weight (0-5)')">Add Skill</button>
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Skills</h3>
+                <div id="skills-section"></div>
+                <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
+                    onclick="addField('skills-section', 'Skill', 'Weight (0-5)')">Add Skill</button>
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Education - Specific Degrees</h3>
-            <div id="specific-degree-section"></div>
-            <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
-                onclick="addSpecificDegreeField()">Add Specific Degree</button>
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Education - Specific Degrees</h3>
+                <div id="specific-degree-section"></div>
+                <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
+                    onclick="addSpecificDegreeField()">Add Specific Degree</button>
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Education - Fallback Degrees</h3>
-            <div id="fallback-degree-section"></div>
-            <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
-                onclick="addFallbackDegreeField()">Add Fallback Degree</button>
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Education - Fallback Degrees</h3>
+                <div id="fallback-degree-section"></div>
+                <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
+                    onclick="addFallbackDegreeField()">Add Fallback Degree</button>
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Places Worked</h3>
-            <div id="places-section"></div>
-            <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
-                onclick="addField('places-section', 'Company Name', 'Weight (0-5)')">Add Company</button><br>
-            <label for="industry" class="block text-gray-700 font-medium mt-4">Fallback Industry:</label>
-            <input type="text" id="industry" name="industry" class="border rounded p-2 w-full">
-            <input type="number" placeholder="Weight (0-5)" name="industry_weight" class="border rounded p-2 w-20 mt-2"
-                min="0" max="5">
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Places Worked</h3>
+                <div id="places-section"></div>
+                <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
+                    onclick="addField('places-section', 'Company Name', 'Weight (0-5)')">Add Company</button><br>
+                <label for="industry" class="block text-gray-700 font-medium mt-4">Fallback Industry:</label>
+                <input type="text" id="industry" name="industry" class="border rounded p-2 w-full">
+                <input type="number" placeholder="Weight (0-5)" name="industry_weight"
+                    class="border rounded p-2 w-20 mt-2" min="0" max="5">
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Years Worked</h3>
-            <label for="min-years" class="block text-gray-700 font-medium">Minimum Years:</label>
-            <input type="number" id="min-years" name="min_years" class="border rounded p-2 w-full" required>
-            <input type="number" placeholder="Weight (0-5)" name="min_years_weight" class="border rounded p-2 w-20 mt-2"
-                required min="0" max="5"><br>
-            <label for="preferred-years" class="block text-gray-700 font-medium mt-4">Preferred Years:</label>
-            <input type="number" id="preferred-years" name="preferred_years" class="border rounded p-2 w-full" required>
-            <input type="number" placeholder="Weight (0-5)" name="preferred_years_weight"
-                class="border rounded p-2 w-20 mt-2" required min="0" max="5">
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Years Worked</h3>
+                <label for="min-years" class="block text-gray-700 font-medium">Minimum Years:</label>
+                <input type="number" id="min-years" name="min_years" class="border rounded p-2 w-full" required>
+                <input type="number" placeholder="Weight (0-5)" name="min_years_weight"
+                    class="border rounded p-2 w-20 mt-2" required min="0" max="5"><br>
+                <label for="preferred-years" class="block text-gray-700 font-medium mt-4">Preferred Years:</label>
+                <input type="number" id="preferred-years" name="preferred_years" class="border rounded p-2 w-full"
+                    required>
+                <input type="number" placeholder="Weight (0-5)" name="preferred_years_weight"
+                    class="border rounded p-2 w-20 mt-2" required min="0" max="5">
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Gaps in Work History</h3>
-            <label for="max-gap" class="block text-gray-700 font-medium">Maximum Gap Tolerance (Years):</label>
-            <input type="number" id="max-gap" name="max_gap" class="border rounded p-2 w-full" required>
-            <input type="number" placeholder="Negative Weight" name="gap_weight" class="border rounded p-2 w-20 mt-2"
-                required min="-5" max="0">
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Gaps in Work History</h3>
+                <label for="max-gap" class="block text-gray-700 font-medium">Maximum Gap Tolerance (Years):</label>
+                <input type="number" id="max-gap" name="max_gap" class="border rounded p-2 w-full" required>
+                <input type="number" placeholder="Negative Weight" name="gap_weight"
+                    class="border rounded p-2 w-20 mt-2" required min="-5" max="0">
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Number of Pages</h3>
-            <div id="pages-section"></div>
-            <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
-                onclick="addField('pages-section', 'Page Range', 'Weight (0-5)')">Add Page Range</button>
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Number of Pages</h3>
+                <div id="pages-section"></div>
+                <button type="button" class="bg-blue-500 text-white rounded px-4 py-2 mt-2"
+                    onclick="addField('pages-section', 'Page Range', 'Weight (0-5)')">Add Page Range</button>
+            </div>
 
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold">Bullet Points vs Paragraphs</h3>
-            <label for="bullet-weight" class="block text-gray-700 font-medium">Bullet Points Weight:</label>
-            <input type="number" id="bullet-weight" name="bullet_weight" class="border rounded p-2 w-20" min="0"
-                max="5">
-            <label for="paragraph-weight" class="block text-gray-700 font-medium mt-4">Paragraph Weight:</label>
-            <input type="number" id="paragraph-weight" name="paragraph_weight" class="border rounded p-2 w-20" min="0"
-                max="5">
-        </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Bullet Points vs Paragraphs</h3>
+                <label for="bullet-weight" class="block text-gray-700 font-medium">Bullet Points Weight:</label>
+                <input type="number" id="bullet-weight" name="bullet_weight" class="border rounded p-2 w-20" min="0"
+                    max="5">
+                <label for="paragraph-weight" class="block text-gray-700 font-medium mt-4">Paragraph Weight:</label>
+                <input type="number" id="paragraph-weight" name="paragraph_weight" class="border rounded p-2 w-20"
+                    min="0" max="5">
+            </div>
 
-        <button type="submit" class="bg-green-500 text-white rounded px-6 py-2 mt-4">Submit</button>
-    </form>
+            <button type="submit" class="bg-green-500 text-white rounded px-6 py-2 mt-4">Submit</button>
+        </form>
+
+    </div>
 </body>
 
 </html>
