@@ -1,75 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" >
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>Resume Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css'>
+<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Architects+Daughter|Roboto&subset=latin,devanagari'>
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css'>
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css'>
+<link rel="stylesheet" href="static/css/landing.css" onload="document.body.classList.add('css-loaded')">
+
 </head>
 
-<body class="bg-gray-50">
-    <!-- Navigation Bar -->
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold text-gray-800">Resume Scanner</div>
-            <nav>
-                <ul class="flex space-x-4">
-                    <div class="hover:bg-gray-400 p-2 rounded-lg text-gray-600 hover:text-white">
-                        <li><a href="#">Home</a></li>
-                    </div>
-                    <div class="hover:bg-gray-400 p-2 rounded-lg text-gray-600 hover:text-white">
-                        <li><a href="#">About</a></li>
-                    </div>
-                    <div class="hover:bg-gray-400 p-2 rounded-lg text-gray-600 hover:text-white">
-                        <li><a href="#">Contact</a></li>
-                    </div>
-                </ul>
-            </nav>
+<!-- partial:index.partial.html -->
+<body class="welcome">
+  <span id="splash-overlay" class="splash"></span>
+  <span id="welcome" class="z-depth-4"></span>
+
+  <header class="navbar-fixed">
+    <nav class="row" style="background-color: #773d0b !important;">
+      <div class="col s12">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo" style="padding-left: 20px;"><img src="logo.webp" alt="Resume" height="50"></a>
+          <ul class="right">
+            <li><a href="#home"><i class="fa fa-home"></i> Home</a></li>
+            <li><a href="#about"><i class="fa fa-info-circle"></i> About</a></li>
+            <li><a href="#contact"><i class="fa fa-envelope"></i> Contact</a></li>
+          </ul>
         </div>
-    </header>
+      </div>
+    </nav>
+  </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center">
-        <!-- Introductory Text -->
-        <div class="lg:w-1/2 mb-10 lg:mb-0">
-            <h1 class="text-4xl font-extrabold text-gray-800 leading-tight mb-6">
-                Welcome to <span class="text-amber-800">Our Online Resume Scanner</span>
-            </h1>
-            <p class="text-gray-600 mb-8">
-                Find the Perfect Job or Candidate with Ease
-                <br><br>
-                At (website name), we bridge the gap between job seekers and recruiters by leveraging advanced
-                technology
-                to streamline the
-                hiring process.
-                <br>
-                <br>
-                <span class="font-bold">For Job Seekers:</span> Upload your resume and discover how well it matches
-                job descriptions. Get personalized insights to optimize your profile and land your dream job.
-                <br>
-                <br>
-                <span class="font-bold">For Recruiters:</span> Quickly analyze multiple resumes and find the most
-                suitable candidates for your roles.
+  <main class="valign-wrapper">
+    <div class = "text">
+    <span class="container brown-text text-lighten-1 ">
+      <p class="flow-text">Welcome to</p>
+      <h1 class="title" style="color: #773d0b !important;">Our Resume Scanner</h1>
+      <p class="text-gray-600 mb-8">
+        Find the Perfect Job or Candidate with Ease
+        <br><br>
+        At (website name), we bridge the gap between job seekers and recruiters by leveraging advanced
+        technology to streamline the hiring process.
+        <br><br>
+        <span class="font-bold">For Job Seekers:</span> Upload your resume and discover how well it matches
+        job descriptions. Get personalized insights to optimize your profile and land your dream job.
+        <br><br>
+        <span class="font-bold">For Recruiters:</span> Quickly analyze multiple resumes and find the most
+        suitable candidates for your roles.
+        <br><br>
+        Simplify your job search and recruitment process today!
+    </p>
 
-                Simplify your job search and recruitment process today!
-            </p>
-            <div class="flex space-x-4">
-                <a href="/login"><button
-                        class="bg-amber-800 text-white px-6 py-2 rounded-lg shadow hover:bg-amber-700">Login</button></a>
+    <div class="button-container">
+      <a href="/login"><button class="btn-login">Login</button></a>
+  
+      <a href="/recruiter-or-jobseeker"><button class="btn-signup">Sign Up</button></a>
+  </div>  
+  </div>
+  <!-- Image -->
+  <div class="Image">
+    <img src="static/images/L.jpg" alt="Intro Image" class="rounded-lg shadow-lg border-4 border-stone-400">
+</div>
 
-                <a href="/recruiter-or-jobseeker"><button
-                        class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg shadow hover:bg-gray-300">Sign
-                        Up</button></a>
+    </span>
 
-            </div>
-        </div>
+  </main>
+  <nav>
+    <footer class="page-footer" style="background-color: #783813;">
+      <div class="footer-copyright" style="background-color: #783813 #9c562d;">  
+     
+    </div>
+  </footer>
 
-        <!-- Image -->
-        <div class="lg:w-1/2">
-            <img src="static\images\L.jpg" alt="Intro Image" class="rounded-lg shadow-lg border-4 border-stone-400">
-        </div>
-    </main>
+<!-- partial -->
+  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js'></script><script  src="static/javascript/landing.js"></script>
+
 </body>
-
 </html>
