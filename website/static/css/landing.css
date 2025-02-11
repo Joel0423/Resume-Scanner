@@ -27,6 +27,7 @@ main {
     -webkit-font-smoothing: antialiased;
   }
   
+  
   .welcome .splash {
     height: 0px;
     padding: 0px;
@@ -39,10 +40,24 @@ main {
     overflow: hidden;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    -webkit-animation: puff 0.5s 1.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards, borderRadius 0.2s 2.3s linear forwards;
-            animation: puff 0.5s 1.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards, borderRadius 0.2s 2.3s linear forwards;
+    -webkit-animation: puff 0.5s 1.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards, 
+    borderRadius 0.2s 2.3s linear forwards, 
+    hideSplash 0s 2.9s forwards;
+animation: puff 0.5s 1.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards, 
+borderRadius 0.2s 2.3s linear forwards, 
+hideSplash 0s 2.9s forwards;
   }
   
+
+/* This hides the splash AFTER animation completes */
+@keyframes hideSplash {
+  100% {
+      display: none;
+      visibility: hidden;
+      opacity: 0;
+  }
+}
+
   .welcome #welcome {
     background: #783813;
     width: 56px;
@@ -57,7 +72,7 @@ main {
     -webkit-animation: init 0.5s 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards, moveDown 1s 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards, moveUp 1s 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, materia 0.5s 2.7s cubic-bezier(0.86, 0, 0.07, 1) forwards, hide 2s 2.9s ease forwards;
             animation: init 0.5s 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards, moveDown 1s 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards, moveUp 1s 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, materia 0.5s 2.7s cubic-bezier(0.86, 0, 0.07, 1) forwards, hide 2s 2.9s ease forwards;
   }
-  
+
   /* moveIn */
   .welcome header,
   .welcome a.btn {
@@ -166,6 +181,7 @@ main::after {
   display: table;
   clear: both;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
