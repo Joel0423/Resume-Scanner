@@ -1,11 +1,3 @@
-""" import google.generativeai as genai
-
-genai.configure(api_key="AIzaSyA-Xrl9eqmuvOuwD3VLVmr3JGA5iX4T_-8")
-model = genai.GenerativeModel("gemini-1.5-flash")
-company = "Ekkenis Software Limited"
-response = model.generate_content(f"is {company} a software company? respond only \"YES\" or \"NO\"")
-print(response.text) """
-
 import google.generativeai as genai
 
 def get_recommendations(scores, resume, job_desc):
@@ -22,6 +14,6 @@ def get_recommendations(scores, resume, job_desc):
         \njob description-{job_desc}
         \nscores-{scores}""")
     
+    
     print(response.text)
     return response.text
-    

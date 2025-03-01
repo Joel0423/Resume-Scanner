@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Description Form</title>
     <link rel="stylesheet" href="/static/css/job_seek_upload.css">
-    <script src = "static/javascript/job_seek_upload.js"></script>
+    <script src="static/javascript/job_seek_upload.js"></script>
 </head>
 
 <body>
@@ -71,7 +71,8 @@
             <div class="form-group">
                 <h3>Skills</h3>
                 <div id="skills-section"></div>
-                <button type="button" class="add-btn" onclick="addField('skills-section', 'Skill', 'Weight (0-5)')">Add Skill</button>
+                <button type="button" class="add-btn" onclick="addField('skills-section', 'Skill', 'Weight (0-5)')">Add
+                    Skill</button>
             </div>
 
             <div class="form-group">
@@ -86,58 +87,75 @@
                 <button type="button" class="add-btn" onclick="addFallbackDegreeField()">Add Fallback Degree</button>
             </div>
 
-             <!-- Years Worked -->
-    <div class="form-group">
-        <h3>Years Worked</h3>
-        <div class="dynamic-field">
-            <label for="min-years">Minimum Years:</label>
-            <input type="number" id="min-years" name="min_years" required>
-            <input type="number" placeholder="Weight (0-5)" name="min_years_weight" class="weight-field" required min="0" max="5">
-        </div>
+            <div class="form-group">
+                <h3>Places Worked</h3>
+                <div id="places-section"></div>
+                <button type="button" class="add-btn"
+                    onclick="addField('places-section', 'Company Name', 'Weight (0-5)')">Add
+                    Company</button>
 
-        <div class="dynamic-field">
-            <label for="preferred-years">Preferred Years:</label>
-            <input type="number" id="preferred-years" name="preferred_years" required>
-            <input type="number" placeholder="Weight (0-5)" name="preferred_years_weight" class="weight-field" required min="0" max="5">
-        </div>
-    </div>
-
-    <!-- Gaps in Work History -->
-    <div class="form-group">
-        <h3>Gaps in Work History</h3>
-        <div class="dynamic-field">
-            <label for="max-gap">Max Gap Tolerance (Years):</label>
-            <input type="number" id="max-gap" name="max_gap" required>
-            <input type="number" placeholder="Negative Weight" name="gap_weight" class="weight-field" required min="-5" max="0">
-        </div>
-    </div>
-
-    <!-- Number of Pages -->
-    <div class="form-group">
-        <h3>Number of Pages</h3>
-        <div id="pages-section"></div>
-        <button type="button" class="add-btn" onclick="addField('pages-section', 'Page Range', 'Weight (0-5)')">Add Page Range</button>
-    </div>
-
-    <!-- Bullet Points vs Paragraphs -->
-    <div class="form-group">
-        <h3>Bullet Points vs Paragraphs</h3>
-        <div class="dynamic-field">
-            <label for="bullet-weight">Bullet Points Weight:</label>
-            <input type="number" id="bullet-weight" name="bullet_weight" class="weight-field" min="0" max="5">
-        </div>
-
-        <div class="dynamic-field">
-            <label for="paragraph-weight">Paragraph Weight:</label>
-            <input type="number" id="paragraph-weight" name="paragraph_weight" class="weight-field" min="0" max="5">
-        </div>
-    </div>
-
-        
-                <button type="submit" class="submit-btn">Submit</button>
+                <label for="industry" class="block text-gray-700 font-medium mt-4">Fallback Industry:</label>
+                <input type="text" id="industry" name="industry">
+                <input type="number" placeholder="Weight (0-5)" name="industry_weight" min="0" max="5">
             </div>
-        
-        </form>
+
+            <!-- Years Worked -->
+            <div class="form-group">
+                <h3>Years Worked</h3>
+                <div class="dynamic-field">
+                    <label for="min-years">Minimum Years:</label>
+                    <input type="number" id="min-years" name="min_years" required>
+                    <input type="number" placeholder="Weight (0-5)" name="min_years_weight" class="weight-field"
+                        required min="0" max="5">
+                </div>
+
+                <div class="dynamic-field">
+                    <label for="preferred-years">Preferred Years:</label>
+                    <input type="number" id="preferred-years" name="preferred_years" required>
+                    <input type="number" placeholder="Weight (0-5)" name="preferred_years_weight" class="weight-field"
+                        required min="0" max="5">
+                </div>
+            </div>
+
+            <!-- Gaps in Work History -->
+            <div class="form-group">
+                <h3>Gaps in Work History</h3>
+                <div class="dynamic-field">
+                    <label for="max-gap">Max Gap Tolerance (Years):</label>
+                    <input type="number" id="max-gap" name="max_gap" required>
+                    <input type="number" placeholder="Negative Weight" name="gap_weight" class="weight-field" required
+                        min="-5" max="0">
+                </div>
+            </div>
+
+            <!-- Number of Pages -->
+            <div class="form-group">
+                <h3>Number of Pages</h3>
+                <div id="pages-section"></div>
+                <button type="button" class="add-btn"
+                    onclick="addField('pages-section', 'Page Range', 'Weight (0-5)')">Add Page Range</button>
+            </div>
+
+            <!-- Bullet Points vs Paragraphs -->
+            <div class="form-group">
+                <h3>Bullet Points vs Paragraphs</h3>
+                <div class="dynamic-field">
+                    <label for="bullet-weight">Bullet Points Weight:</label>
+                    <input type="number" id="bullet-weight" name="bullet_weight" class="weight-field" min="0" max="5">
+                </div>
+
+                <div class="dynamic-field">
+                    <label for="paragraph-weight">Paragraph Weight:</label>
+                    <input type="number" id="paragraph-weight" name="paragraph_weight" class="weight-field" min="0"
+                        max="5">
+                </div>
+            </div>
+
+
+            <button type="submit" class="submit-btn">Submit</button>
+    </div>
+
+    </form>
     </div>
 </body>
 

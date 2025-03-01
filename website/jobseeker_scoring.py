@@ -13,6 +13,8 @@ from docx2pdf import convert
 import fitz
 import os
 
+from .jobseeker_results import get_recommendations
+
 # Load Spacy NLP model
 nlp = spacy.load("en_core_web_sm")
 
@@ -75,7 +77,7 @@ def score_job_description(resume_text, job_description):
     vectors = vectorizer.fit_transform([resume_processed, job_processed])
     similarity = cosine_similarity(vectors[0], vectors[1])
 
-    return similarity[0][0] * 200
+    return similarity[0][0] * 100
 
 # Skills Scoring
 def score_skills(resume_doc, skills):
@@ -456,5 +458,8 @@ def calculate_resume_score(file_path, job_description, scoring_weights):
     
     # Flash results for display
     flash({"total_score": total_score, "section_scores": scores}, category="scores")
+
+    gemini_recomm = get_recommendations(scores, resume_doc, job_description)
+    flash(gemini_recomm, category="jobseek_recommendations")
 
     return {"total_score": total_score, "section_scores": scores}

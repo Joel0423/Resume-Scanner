@@ -47,6 +47,9 @@ class Recruiter(db.Model):
     
     about_company = db.Column(db.Text)
 
+    # Relationships
+    job = db.relationship('Job', backref='Recruiter', cascade="all, delete-orphan")
+
     def __repr__(self):
         return f"<User {self.name} ({self.email})>"
     
@@ -111,64 +114,42 @@ class Job(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    skills = db.relationship('JobSkill', backref='job', cascade="all, delete-orphan")
-    education_specific = db.relationship('JobEducationSpecific', backref='job', cascade="all, delete-orphan")
-    fallback_degrees = db.relationship('JobFallbackDegree', backref='job', cascade="all, delete-orphan")
+    job_weights = db.relationship('RecruiterJobScoringWeights', backref='job', cascade="all, delete-orphan")
 
-class JobSkill(db.Model):
-    __tablename__ = 'JOB_SKILLS'
+class RecruiterJobScoringWeights(db.Model):
+    __tablename__ = 'RECRUITER_JOB_SCORINGWEIGHTS'
 
     id = db.Column(db.Integer, primary_key=True)
     job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
-    skill_name = db.Column(db.String(255), nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
 
-class JobEducationSpecific(db.Model):
-    __tablename__ = 'JOB_EDUCATION_SPECIFIC'
+    # Skills (JSON format to store dynamically added skills and weights)
+    skills = db.Column(db.JSON, nullable=True)
 
-    id = db.Column(db.Integer, primary_key=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
-    degree_name = db.Column(db.String(255), nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
+    # Education (specific degrees and fallback degrees with weights)
+    specific_degrees = db.Column(db.JSON, nullable=True)
+    fallback_degrees = db.Column(db.JSON, nullable=True)
 
-class JobFallbackDegree(db.Model):
-    __tablename__ = 'JOB_FALLBACK_DEGREES'
+    # Places worked (preferred companies and fallback industry with weights)
+    preferred_companies = db.Column(db.JSON, nullable=True)
+    fallback_industry = db.Column(db.String(255), nullable=True)
+    fallback_industry_weight = db.Column(db.Integer, nullable=True)
 
-    id = db.Column(db.Integer, primary_key=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
-    degree_type = db.Column(db.String(50), nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
+    # Years worked (minimum and preferred with weights)
+    min_years = db.Column(db.Integer, nullable=True)
+    min_years_weight = db.Column(db.Integer, nullable=True)
+    preferred_years = db.Column(db.Integer, nullable=True)
+    preferred_years_weight = db.Column(db.Integer, nullable=True)
 
-class JobExperience(db.Model):
-    __tablename__ = 'JOB_EXPERIENCE'
+    # Gaps in work history (maximum gap tolerance and negative weight)
+    max_gap_tolerance = db.Column(db.Integer, nullable=True)
+    gap_negative_weight = db.Column(db.Integer, nullable=True)
 
-    id = db.Column(db.Integer, primary_key=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
-    min_years = db.Column(db.Integer, nullable=False)
-    min_years_weight = db.Column(db.Integer, nullable=False)
-    preferred_years = db.Column(db.Integer, nullable=False)
-    preferred_years_weight = db.Column(db.Integer, nullable=False)
+    # Number of pages (ranges and weights in JSON format)
+    page_ranges = db.Column(db.JSON, nullable=True)
 
-class JobWorkGap(db.Model):
-    __tablename__ = 'JOB_WORK_GAP'
-
-    id = db.Column(db.Integer, primary_key=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
-    max_gap = db.Column(db.Integer, nullable=False)
-    gap_weight = db.Column(db.Integer, nullable=False)
-
-class JobResumePages(db.Model):
-    __tablename__ = 'JOB_RESUME_PAGES'
-
-    id = db.Column(db.Integer, primary_key=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
-    page_range = db.Column(db.String(50), nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
-
-class JobFormatPreference(db.Model):
-    __tablename__ = 'JOB_FORMAT_PREFERENCE'
-
-    id = db.Column(db.Integer, primary_key=True)
-    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    # Bullet points vs paragraph weights
     bullet_weight = db.Column(db.Integer, nullable=True)
     paragraph_weight = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+        return f"<RecruiterJobScoringWeights id={self.id} job_id={self.job_id}>"
