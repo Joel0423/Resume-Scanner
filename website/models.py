@@ -1,5 +1,6 @@
 from . import db
 from flask_login import UserMixin
+from datetime import datetime
 
 class User(db.Model, UserMixin):
     __tablename__ = 'USERS'
@@ -91,3 +92,83 @@ class JobSeekerScoringWeights(db.Model):
 
     def __repr__(self):
         return f"<JobSeekerScoringWeights id={self.id} jobseeker_id={self.jobseeker_id}>"
+
+
+# Post the job
+class Job(db.Model):
+    __tablename__ = 'JOBS'
+
+    job_id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    company = db.Column(db.String(255), nullable=False)
+    location = db.Column(db.String(255), nullable=False)
+    job_type = db.Column(db.String(50), nullable=False)
+    salary_min = db.Column(db.Integer, nullable=True)
+    salary_max = db.Column(db.Integer, nullable=True)
+    deadline = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    recruiter_id = db.Column(db.Integer, db.ForeignKey('RECRUITERS.user_id'), nullable=False)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    skills = db.relationship('JobSkill', backref='job', cascade="all, delete-orphan")
+    education_specific = db.relationship('JobEducationSpecific', backref='job', cascade="all, delete-orphan")
+    fallback_degrees = db.relationship('JobFallbackDegree', backref='job', cascade="all, delete-orphan")
+
+class JobSkill(db.Model):
+    __tablename__ = 'JOB_SKILLS'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    skill_name = db.Column(db.String(255), nullable=False)
+    weight = db.Column(db.Integer, nullable=False)
+
+class JobEducationSpecific(db.Model):
+    __tablename__ = 'JOB_EDUCATION_SPECIFIC'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    degree_name = db.Column(db.String(255), nullable=False)
+    weight = db.Column(db.Integer, nullable=False)
+
+class JobFallbackDegree(db.Model):
+    __tablename__ = 'JOB_FALLBACK_DEGREES'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    degree_type = db.Column(db.String(50), nullable=False)
+    weight = db.Column(db.Integer, nullable=False)
+
+class JobExperience(db.Model):
+    __tablename__ = 'JOB_EXPERIENCE'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    min_years = db.Column(db.Integer, nullable=False)
+    min_years_weight = db.Column(db.Integer, nullable=False)
+    preferred_years = db.Column(db.Integer, nullable=False)
+    preferred_years_weight = db.Column(db.Integer, nullable=False)
+
+class JobWorkGap(db.Model):
+    __tablename__ = 'JOB_WORK_GAP'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    max_gap = db.Column(db.Integer, nullable=False)
+    gap_weight = db.Column(db.Integer, nullable=False)
+
+class JobResumePages(db.Model):
+    __tablename__ = 'JOB_RESUME_PAGES'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    page_range = db.Column(db.String(50), nullable=False)
+    weight = db.Column(db.Integer, nullable=False)
+
+class JobFormatPreference(db.Model):
+    __tablename__ = 'JOB_FORMAT_PREFERENCE'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    bullet_weight = db.Column(db.Integer, nullable=True)
+    paragraph_weight = db.Column(db.Integer, nullable=True)

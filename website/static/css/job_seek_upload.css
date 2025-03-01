@@ -1,0 +1,223 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: hsl(0, 0%, 100%);
+    margin: 0;
+    padding: 0;
+}
+
+.banner img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    border-top-left-radius: 10px; /* Matches form border radius */
+    border-top-right-radius: 10px;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 20px;
+    color: #333;
+}
+
+.form-container {
+    width: 70%;
+    max-width: 800px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    padding-left: 30px; /* Increase left padding */
+    padding-right: 40px; /* Add equal right padding */
+    border-radius: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+    position: relative;
+}
+
+.form-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+textarea {
+    height: 100px;
+    padding-right: 30px;
+}
+
+textarea, input, select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+textarea:hover, input:hover, select:hover {
+    border-color: #007BFF;
+}
+
+textarea:focus, input:focus, select:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+.add-btn, .remove-btn{
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.submit-btn
+{
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.remove-btn:hover {
+    background: #a71d2a;
+    transform: scale(1.05);
+}
+
+.submit-btn:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-group {
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 30px 0;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid #863a3a;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between; /* Ensures spacing within the container */
+    gap: 10px; /* Adds spacing between elements */
+    flex-wrap: wrap; /* Prevents overflow */
+    margin-bottom: 15px; /* Adds spacing between fields */
+    width: 95%; /* Ensures it fits inside the container */
+}
+
+.form-group:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    width: 200px; /* Keeps labels aligned */
+    flex-shrink: 0; 
+}
+
+textarea, input, select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: border 0.3s ease-in-out;
+    flex: 1; /* Ensures equal width distribution */
+    min-width: 150px;
+}
+
+.dynamic-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: bold;
+    width: 100px; /* Keeps labels aligned */
+    flex-shrink: 0;
+}
+
+.input-field, .select-field, .weight-field {
+    flex: 1;
+    padding: 8px;
+    padding-right: 1px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.weight-field {
+    width: 60px;
+    text-align: center;
+}
+
+.add-btn, .remove-btn, .submit-btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.add-btn {
+    background: #773d0b;
+    color: white;
+}
+
+.add-btn:hover {
+    background: #7c5b3a;
+    transform: scale(1.05);
+}
+
+.remove-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.remove-btn:hover {
+    background: #a71d2a;
+}
+
+.submit-btn {
+    background: #773d0b;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+}
+
+.submit-btn:hover {
+    background: #89603a;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

@@ -2,9 +2,10 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 import os
 from werkzeug.utils import secure_filename
-from .models import JobSeekerScoringWeights
+from .models import JobSeekerScoringWeights, Job, JobSkill, JobEducationSpecific, JobFallbackDegree
 from . import db
 from .jobseeker_scoring import calculate_resume_score
+from datetime import datetime
 
 views =  Blueprint('views', __name__)
 
@@ -140,3 +141,126 @@ def jobseek_upload():
 @login_required
 def jobseek_result():
     return render_template("job_seek_result.html")
+
+
+#post job 
+@views.route('/post-job', methods=['GET', 'POST'])
+@login_required
+def post_job():
+    if request.method == 'POST':
+        try:
+            # Extract form data
+            job_title = request.form.get('job_title')
+            company_name = request.form.get('company_name')
+            location = request.form.get('location')
+            job_type = request.form.get('job_type')
+            salary_min = request.form.get('salary_min', type=int)
+            salary_max = request.form.get('salary_max', type=int)
+            deadline = request.form.get('deadline')
+            job_description = request.form.get('job_description')
+
+            # Convert deadline to date object
+            deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
+
+            # Validate required fields
+            if not (job_title and company_name and location and job_type and job_description and deadline):
+                flash("All required fields must be filled!", "error")
+                return redirect(url_for('views.post_job'))
+
+            # Create Job entry
+            new_job = Job(
+                title=job_title,
+                company=company_name,
+                location=location,
+                job_type=job_type,
+                salary_min=salary_min,
+                salary_max=salary_max,
+                deadline=deadline_date,
+                description=job_description,
+                recruiter_id=current_user.user_id
+            )
+            db.session.add(new_job)
+            db.session.commit()  # Commit to generate job_id
+
+            # Get job ID after committing
+            job_id = new_job.job_id
+
+            ### Save Skills ###
+            skills = request.form.getlist('skills[]')
+            skills_weight = request.form.getlist('skills_weight[]')
+            for skill, weight in zip(skills, skills_weight):
+                if skill.strip():
+                    db.session.add(JobSkill(job_id=job_id, skill_name=skill.strip(), weight=int(weight)))
+
+            ### Save Education ###
+            education_specific = request.form.getlist('education_specific[]')
+            education_specific_weight = request.form.getlist('education_specific_weight[]')
+            for degree, weight in zip(education_specific, education_specific_weight):
+                if degree.strip():
+                    db.session.add(JobEducationSpecific(job_id=job_id, degree_name=degree.strip(), weight=int(weight)))
+
+            fallback_degrees = request.form.getlist('fallback_degree[]')
+            fallback_weight = request.form.getlist('fallback_weight[]')
+            for degree, weight in zip(fallback_degrees, fallback_weight):
+                db.session.add(JobFallbackDegree(job_id=job_id, degree_type=degree, weight=int(weight)))
+
+            ### Save Experience ###
+            min_years = request.form.get('min_years', type=int)
+            min_years_weight = request.form.get('min_years_weight', type=int)
+            preferred_years = request.form.get('preferred_years', type=int)
+            preferred_years_weight = request.form.get('preferred_years_weight', type=int)
+
+            if min_years is not None and preferred_years is not None:
+                db.session.add(JobExperience(
+                    job_id=job_id,
+                    min_years=min_years,
+                    min_years_weight=min_years_weight,
+                    preferred_years=preferred_years,
+                    preferred_years_weight=preferred_years_weight
+                ))
+
+            ### Save Work Gap ###
+            max_gap = request.form.get('max_gap', type=int)
+            gap_weight = request.form.get('gap_weight', type=int)
+
+            if max_gap is not None:
+                db.session.add(JobWorkGap(
+                    job_id=job_id,
+                    max_gap=max_gap,
+                    gap_weight=gap_weight
+                ))
+
+            ### Save Resume Page Preference ###
+            page_range = request.form.get('page_range')
+            page_weight = request.form.get('page_weight', type=int)
+
+            if page_range:
+                db.session.add(JobResumePages(
+                    job_id=job_id,
+                    page_range=page_range,
+                    weight=page_weight
+                ))
+
+            ### Save Resume Format Preference ###
+            bullet_weight = request.form.get('bullet_weight', type=int)
+            paragraph_weight = request.form.get('paragraph_weight', type=int)
+
+            if bullet_weight is not None or paragraph_weight is not None:
+                db.session.add(JobFormatPreference(
+                    job_id=job_id,
+                    bullet_weight=bullet_weight,
+                    paragraph_weight=paragraph_weight
+                ))
+
+            # Commit all changes
+            db.session.commit()
+
+            flash("Job posted successfully!", "success")
+            return redirect(url_for('views.recruiter_home'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error posting job: {str(e)}", "error")
+            return redirect(url_for('views.post_job'))
+
+    return render_template('post_a_job.html')

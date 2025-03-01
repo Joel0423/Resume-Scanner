@@ -11,19 +11,61 @@
 
 <body>
     <div class="form-container">
-        <form class="job-form" action="/jobseek-upload" method="post" enctype="multipart/form-data">
-            <div class = "banner">
-            <img src="static/images/login.jpg" alt="Job Description" class="form-banner">
-        </div>
-            <h1>Job Description Form</h1>
+        <form class="job-form" action="/post-job" method="post">
+            <div class="banner">
+                <img src="static\images\ReJob.avif" alt="Job Posting" class="form-banner">
+            </div>
+
+            <h1>Job Posting Form</h1>
+
             <div class="form-group">
-                <label for="job-description">Job Description:</label>
-                <textarea id="job-description" name="job_description" class="input-field" required></textarea>
+                <label for="job-title">Job Title:</label>
+                <input type="text" id="job-title" name="job_title" class="input-field" required>
+                <span class="validation-message"></span>
             </div>
 
             <div class="form-group">
-                <label for="resume">Resume File:</label>
-                <input type="file" id="resume" name="resume_file" class="input-field" required>
+                <label for="company-name">Company Name:</label>
+                <input type="text" id="company-name" name="company_name" class="input-field" required>
+                <span class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" class="input-field" required>
+                <span class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="job-type">Job Type:</label>
+                <select id="job-type" name="job_type" class="input-field" required>
+                    <option value="">Select Job Type</option>
+                    <option value="full-time">Full-time</option>
+                    <option value="part-time">Part-time</option>
+                    <option value="contract">Contract</option>
+                    <option value="remote">Remote</option>
+                </select>
+                <span class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Salary Range (USD/year):</label>
+                <div class="salary-range">
+                    <input type="number" placeholder="Min Salary" name="salary_min" class="input-field">
+                    <input type="number" placeholder="Max Salary" name="salary_max" class="input-field">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline">Application Deadline:</label>
+                <input type="date" id="deadline" name="deadline" class="input-field" required>
+                <span class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="job-description">Job Description:</label>
+                <textarea id="job-description" name="job_description" class="input-field" required></textarea>
+                <span class="validation-message"></span>
             </div>
 
             <div class="form-group">
