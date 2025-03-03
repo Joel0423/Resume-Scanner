@@ -20,7 +20,7 @@ def get_recommendations(scores, resume, job_desc):
 
     Use this JSON schema:
 
-    response = {{'Q1': str, 'Q2': str,'Q3': str}}
+    response = {{'What's wrong with the resume?': str, 'How can it be fixed?': str,'Skills that could help.': str}}
     Return: response
     """
 
