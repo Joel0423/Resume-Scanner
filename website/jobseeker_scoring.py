@@ -13,7 +13,7 @@ from docx2pdf import convert
 import fitz
 import os
 
-from .jobseeker_results import get_recommendations
+from .jobseeker_results_genai import get_recommendations
 
 # Load Spacy NLP model
 nlp = spacy.load("en_core_web_sm")
