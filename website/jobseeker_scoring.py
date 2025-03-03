@@ -425,7 +425,7 @@ def score_bullets_vs_paragraphs(resume_text, bullet_weight, paragraph_weight):
 
 
 # Main Scoring Function
-def calculate_resume_score(file_path, job_description, scoring_weights):
+def calculate_resume_results(file_path, job_description, scoring_weights):
     resume_text, num_pages = extract_resume_text(file_path)
     print(resume_text)
     print(num_pages)
@@ -462,4 +462,4 @@ def calculate_resume_score(file_path, job_description, scoring_weights):
     gemini_recomm = get_recommendations(scores, resume_doc, job_description)
     flash(gemini_recomm, category="jobseek_recommendations")
 
-    return {"total_score": total_score, "section_scores": scores}
+    return {"total_score": total_score, "section_scores": scores, "recommendations": gemini_recomm}

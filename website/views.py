@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, send_file, abort
 from flask_login import login_required, current_user
 import os
 from werkzeug.utils import secure_filename
-from .models import JobSeekerScoringWeights, Job, RecruiterJobScoringWeights
+from .models import JobSeekerScoringWeights, Job, RecruiterJobScoringWeights, JobSeekerResult
 from . import db
-from .jobseeker_scoring import calculate_resume_score
+from .jobseeker_scoring import calculate_resume_results
 from datetime import datetime
 
 views =  Blueprint('views', __name__)
@@ -83,13 +83,17 @@ def jobseek_upload():
         resume_file_path = None
         if resume_file:
             # Define the folder outside the current directory
-            upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../uploaded_resumes')
+            upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..\\uploaded_resumes')
             os.makedirs(upload_folder, exist_ok=True)
 
             # Secure the filename and save the file
             filename = secure_filename(resume_file.filename)
             resume_file_path = os.path.join(upload_folder, filename)
             resume_file.save(resume_file_path)
+            #modify to correct path after saving to store in database
+            resume_file_path = resume_file_path.replace("\website\..","")
+            resume_file_path = resume_file_path.replace("\\","/")
+            #resume_file_path = "file:///".join(resume_file_path)
 
         # Create the JobSeekerScoringWeights object
         scoring_weights = JobSeekerScoringWeights(
@@ -120,9 +124,18 @@ def jobseek_upload():
             db.session.commit()
             flash("Scoring weights and resume uploaded successfully.", "success")
             
-            calculate_resume_score(resume_file_path, job_description, scoring_weights)
+            #store results in DB
+            res = calculate_resume_results(resume_file_path, job_description, scoring_weights)
+            jobseeker_results = JobSeekerResult(
+                jobseeker_id = current_user.user_id,
+                scores = res['section_scores'],
+                recommendations = res['recommendations'],
+                resume_file_path = resume_file_path
+            )
+            db.session.add(jobseeker_results)
+            db.session.commit()
 
-            return redirect(url_for('views.jobseek_result'))
+            return redirect(url_for('views.jobseek_result', result_id=jobseeker_results.result_id, jobseek_id=current_user.user_id))
         
             
         except Exception as e:
@@ -137,16 +150,51 @@ def jobseek_upload():
         return render_template("recruiter_home.html")
 
 
-@views.route("/jobseek-result", methods=['GET', 'POST'])
+@views.route("/jobseek-result", methods=['GET'])
 @login_required
 def jobseek_result():
+
     return render_template("job_seek_result.html")
+
+@views.route('/get-j-result', methods=['GET'])
+@login_required
+def get_jobseek_results():
+    result_id = request.args.get('result_id')
+    jobseek_id = request.args.get('jobseek_id')
+    download = request.args.get('download', 'false').lower() == 'true'  # Check if 'download' is true
+
+    # Query the database for the result
+    result = JobSeekerResult.query.filter_by(result_id=result_id, jobseeker_id=jobseek_id).first()
+
+    if not result:
+        flash("No results found for the given parameters.", "danger")
+        return redirect(url_for('views.job_seeker_home'))
+
+    # Get the resume file path
+    resume_file_path = result.resume_file_path
+
+    # If `download` is True, return the PDF file directly
+    if download:
+        if not resume_file_path or not os.path.exists(resume_file_path):
+            abort(404, description="Resume file not found.")
+        return send_file(resume_file_path, as_attachment=False, mimetype='application/pdf')
+
+    # Otherwise, return JSON response
+    return jsonify({
+        "resume_file_path": resume_file_path,
+        "recommendations": result.recommendations,
+        "scores": result.scores
+    })
 
 
 #post job 
 @views.route('/post-job', methods=['GET', 'POST'])
 @login_required
 def post_job():
+    if current_user.role != 'recruiter':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.job_seeker_home'))
+
     if request.method == 'POST':
         try:
             # Extract form data
@@ -263,3 +311,95 @@ def post_job():
             return redirect(url_for('views.post_job'))
 
     return render_template('post_a_job.html')
+
+
+@views.route('/view-my-job', methods=['GET'])
+@login_required
+def view_recruiter_job():
+    if current_user.role != 'recruiter':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.job_seeker_home'))
+    
+    return render_template('recruiter_job_posts.html')
+    
+
+@views.route('/get-r-jobs', methods=['GET'])
+@login_required
+def get_r_jobs():
+    if current_user.role != 'recruiter':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.job_seeker_home'))
+    
+    recruiter_id = current_user.user_id
+    title = request.args.get("title", "")
+    location = request.args.get("location", "")
+    company = request.args.get("company", "")
+    salary_min = request.args.get("salary_min", type=int, default=0)
+    salary_max = request.args.get("salary_max", type=int, default=999999)
+    page = request.args.get("page", type=int, default=1)
+    per_page = 6  # Number of jobs per page
+
+    query = Job.query.filter(Job.recruiter_id == recruiter_id)
+
+    if title:
+        query = query.filter(Job.title.ilike(f"%{title}%"))
+    if location:
+        query = query.filter(Job.location.ilike(f"%{location}%"))
+    if company:
+        query = query.filter(Job.company.ilike(f"%{company}%"))
+    query = query.filter(
+        Job.salary_max >= salary_min,  # Ensure the job's max salary is at least the requested min_salary
+        Job.salary_min <= salary_max   # Ensure the job's min salary is at most the requested max_salary
+    )
+
+    jobs = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "jobs": [{"id": job.job_id, "title": job.title, "company": job.company, "location": job.location, "salary": [job.salary_min, job.salary_max]} for job in jobs.items],
+        "total_pages": jobs.pages,
+        "current_page": jobs.page
+    })
+
+@views.route('/get-all-jobs', methods=['GET'])
+@login_required
+def get_all_jobs():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.recruiter_home'))
+    
+    title = request.args.get("title", "")
+    location = request.args.get("location", "")
+    company = request.args.get("company", "")
+    salary_min = request.args.get("salary_min", type=int, default=0)
+    salary_max = request.args.get("salary_max", type=int, default=999999)
+    page = request.args.get("page", type=int, default=1)
+    per_page = 6  # Number of jobs per page
+
+    query = Job.query
+    if title:
+        query = query.filter(Job.title.ilike(f"%{title}%"))
+    if location:
+        query = query.filter(Job.location.ilike(f"%{location}%"))
+    if company:
+        query = query.filter(Job.company.ilike(f"%{company}%"))
+    query = query.filter(
+        Job.salary_max >= salary_min,  # Ensure the job's max salary is at least the requested min_salary
+        Job.salary_min <= salary_max   # Ensure the job's min salary is at most the requested max_salary
+    )
+
+    jobs = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "jobs": [{"id": job.job_id, "title": job.title, "company": job.company, "location": job.location, "salary": [job.salary_min, job.salary_max]} for job in jobs.items],
+        "total_pages": jobs.pages,
+        "current_page": jobs.page
+    })
+
+@views.route('/view-all-job', methods=['GET'])
+@login_required
+def view_all_job():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.job_seeker_home'))
+    
+    return render_template('all_job_posts.html')
