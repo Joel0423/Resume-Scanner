@@ -61,7 +61,7 @@ class JobSeekerScoringWeights(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('JOBSEEKERS.user_id', ondelete='CASCADE'), nullable=False)
 
-    # Job description and file (if needed for context)
+    # Job description and file
     job_description = db.Column(db.Text, nullable=True)
     resume_file_path = db.Column(db.String(255), nullable=True)
 

@@ -6,8 +6,13 @@ from .models import JobSeekerScoringWeights, Job, RecruiterJobScoringWeights, Jo
 from . import db
 from .jobseeker_scoring import calculate_resume_results
 from datetime import datetime
+import google.generativeai as genai
+import json
 
 views =  Blueprint('views', __name__)
+
+genai.configure(api_key="AIzaSyA-Xrl9eqmuvOuwD3VLVmr3JGA5iX4T_-8")
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 def redirect_home():
     if current_user.role == "recruiter":
@@ -42,7 +47,7 @@ def jobseek_upload():
             flash("Access denied.", "error")
             return redirect(url_for('views.recruiter_home'))
 
-        # Get the form data
+        """ # Get the form data
         job_description = request.form.get('job_description')
         skills = request.form.getlist('skills-section[]')  # Assuming dynamic skills are sent as a list
         skill_weights = request.form.getlist('skills-section_weight[]')
@@ -93,28 +98,106 @@ def jobseek_upload():
             #modify to correct path after saving to store in database
             resume_file_path = resume_file_path.replace(r"\website\..","")
             resume_file_path = resume_file_path.replace("\\","/")
-            #resume_file_path = "file:///".join(resume_file_path)
+            #resume_file_path = "file:///".join(resume_file_path) """
+        
+        job_desc = request.form.get('job-description')
+        resume_file = request.files.get('resume_file')
+        resume_file_path = None
+        if resume_file:
+            print("yessss")
+            # Define the folder outside the current directory
+            upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..\\uploaded_resumes')
+            os.makedirs(upload_folder, exist_ok=True)
 
+            # Secure the filename and save the file
+            filename = secure_filename(resume_file.filename)
+            resume_file_path = os.path.join(upload_folder, filename)
+            resume_file.save(resume_file_path)
+            #modify to correct path after saving to store in database
+            resume_file_path = resume_file_path.replace(r"\website\..","")
+            resume_file_path = resume_file_path.replace("\\","/")
+            #resume_file_path = "file:///".join(resume_file_path)
+        
+        prompt = f"""this is a flask sql alchemy model-
+         class JobSeekerScoringWeights(db.Model):
+        __tablename__ = 'JOBSEEKER_SCORINGWEIGHTS'
+
+        id = db.Column(db.Integer, primary_key=True)
+        user_id = db.Column(db.Integer, db.ForeignKey('JOBSEEKERS.user_id', ondelete='CASCADE'), nullable=False)
+
+        # Job description and file
+        job_description = db.Column(db.Text, nullable=True)
+        resume_file_path = db.Column(db.String(255), nullable=True)
+
+        # Skills (JSON format to store dynamically added skills and weights as values)
+        skills = db.Column(db.JSON, nullable=True)
+
+        # Education (specific degrees and fallback degrees with weights as values)
+        specific_degrees = db.Column(db.JSON, nullable=True)
+        fallback_degrees = db.Column(db.JSON, nullable=True)
+
+        # Places worked (preferred companies and fallback industry with weights as values)
+        preferred_companies = db.Column(db.JSON, nullable=True)
+        fallback_industry = db.Column(db.String(255), nullable=True)
+        fallback_industry_weight = db.Column(db.Integer, nullable=True)
+
+        # Years worked (minimum and preferred with weights)
+        min_years = db.Column(db.Integer, nullable=True)
+        min_years_weight = db.Column(db.Integer, nullable=True)
+        preferred_years = db.Column(db.Integer, nullable=True)
+        preferred_years_weight = db.Column(db.Integer, nullable=True)
+
+        # Gaps in work history (maximum gap tolerance and negative weight)
+        max_gap_tolerance = db.Column(db.Integer, nullable=True)
+        gap_negative_weight = db.Column(db.Integer, nullable=True)
+
+        # Number of pages (ranges example: 1-2 and weights as values in JSON format)
+        page_ranges = db.Column(db.JSON, nullable=True)
+
+        # Bullet points vs paragraph weights (weights for the resume if its more bullet point or paragraph heavy)
+        bullet_weight = db.Column(db.Integer, nullable=True)
+        paragraph_weight = db.Column(db.Integer, nullable=True) 
+        
+        now read this job description- {job_desc} for a job
+        the columns and weights in the model are how a recruiter will value those sections of a resume
+        assume the role of the recruiter and fill in the values for each columns and corresponding weights(0-5 only) as per the model
+        by referring to the job description
+        dont leave any columns empty, give atleast one for preferred_companies
+        for fallback_degree return PhD, Masters or bachelors, format accoring to the model
+
+        return a JSON with each column as a key with no other text or explanation
+
+        """
+        
+
+        response = model.generate_content(prompt)
+        response_text = response.text
+        response_text = response_text.replace("```json","")
+        response_text = response_text.replace("```", "")
+        
+        response_dict = json.loads(response_text)
+
+        print(response_dict)
         # Create the JobSeekerScoringWeights object
         scoring_weights = JobSeekerScoringWeights(
             user_id=current_user.user_id,
-            job_description=job_description,
+            job_description=response_dict['job_description'],
             resume_file_path=resume_file_path,
-            skills=skills_data,
-            specific_degrees=specific_degrees_data,
-            fallback_degrees=fallback_degrees_data,
-            preferred_companies=preferred_companies_data,
-            fallback_industry=fallback_industry,
-            fallback_industry_weight=fallback_industry_weight,
-            min_years=min_years,
-            min_years_weight=min_years_weight,
-            preferred_years=preferred_years,
-            preferred_years_weight=preferred_years_weight,
-            max_gap_tolerance=max_gap_tolerance,
-            gap_negative_weight=gap_negative_weight,
-            page_ranges=page_ranges_data,
-            bullet_weight=bullet_weight,
-            paragraph_weight=paragraph_weight
+            skills=response_dict['skills'],
+            specific_degrees=response_dict['specific_degrees'],
+            fallback_degrees=response_dict['fallback_degrees'],
+            preferred_companies=response_dict['preferred_companies'],
+            fallback_industry=response_dict['fallback_industry'],
+            fallback_industry_weight=response_dict['fallback_industry_weight'],
+            min_years=response_dict['min_years'],
+            min_years_weight=response_dict['min_years_weight'],
+            preferred_years=response_dict['preferred_years'],
+            preferred_years_weight=response_dict['preferred_years_weight'],
+            max_gap_tolerance=response_dict['max_gap_tolerance'],
+            gap_negative_weight=response_dict['gap_negative_weight'],
+            page_ranges=response_dict['page_ranges'],
+            bullet_weight=response_dict['bullet_weight'],
+            paragraph_weight=response_dict['paragraph_weight']
         )
 
         # Save to the database
@@ -125,7 +208,9 @@ def jobseek_upload():
             flash("Scoring weights and resume uploaded successfully.", "success")
             
             #store results in DB
-            res = calculate_resume_results(resume_file_path, job_description, scoring_weights)
+            print("HHHHHHHHHHHHHHHHHHHHHHHH")
+            res = calculate_resume_results(resume_file_path, response_dict['job_description'], scoring_weights)
+            print("JJJJJJJJJJJJJJJJJJJJJJJJJJ")
             jobseeker_results = JobSeekerResult(
                 jobseeker_id = current_user.user_id,
                 scores = res['section_scores'],
@@ -143,11 +228,11 @@ def jobseek_upload():
             flash(f"An error occurred: {str(e)}", "error")
             return redirect(url_for('views.jobseek_upload'))
 
-    # GET request - render the upload form
+    """ # GET request - render the upload form
     if request.method == 'GET':
         if current_user.role == 'job-seeker':
             return render_template("job_seek_upload.html")
-        return render_template("recruiter_home.html")
+        return render_template("recruiter_home.html") """
 
 
 @views.route("/jobseek-result", methods=['GET'])
@@ -622,7 +707,6 @@ def job_candidates():
     # If `download` is True, return the PDF file directly
     if download:
         result_id = request.args.get('result_id',"")
-        print(result_id)
         matching_result = None
         
         for item in results_data:

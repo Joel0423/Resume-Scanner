@@ -126,16 +126,14 @@
 
     <!-- Resume Upload Section -->
     <div class="container">
-      <form class="resume-upload-form">
+      <form class="resume-upload-form" action="/jobseek-upload" method="post" enctype="multipart/form-data">
         <!-- Resume Section -->
         <div class="form-grid">
           <div>
             <label for="resume" class="form-label">Resume:</label>
-            <textarea id="resume" name="resume" placeholder="Paste your resume here..." class="form-textarea"
-              required></textarea>
-            <a href="/jobseek-upload">
-              <button id="upload-resume" type="button" class="form-button">Upload Resume</button>
-            </a>
+            <textarea id="resume" name="resume" placeholder="Paste your resume here..."
+              class="form-textarea"></textarea>
+            <input type="file" id="resume" name="resume_file" class="form-button" required>
           </div>
 
           <!-- Job Description Section -->
