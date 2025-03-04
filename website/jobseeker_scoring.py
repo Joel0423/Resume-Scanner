@@ -15,6 +15,10 @@ import os
 
 from .jobseeker_results_genai import get_recommendations
 
+import google.generativeai as genai
+genai.configure(api_key="AIzaSyA-Xrl9eqmuvOuwD3VLVmr3JGA5iX4T_-8")
+model = genai.GenerativeModel("gemini-2.0-flash")
+
 # Load Spacy NLP model
 nlp = spacy.load("en_core_web_sm")
 
@@ -69,15 +73,28 @@ def preprocess_text_JD(text):
 
 # Job Description Scoring
 def score_job_description(resume_text, job_description):
-    resume_processed = preprocess_text_JD(resume_text)
-    job_description = nlp(job_description.lower())
-    job_processed = preprocess_text_JD(job_description)
+    prompt = f"""Analyze the relevance of the provided resume to the job description based on industry, 
+    job roles, required experience, and skills. 
+    Return only one of the following categories with no other text: Irrelevant, Unrelated, Related, Relevant, Pertinent.
 
-    vectorizer = TfidfVectorizer()
-    vectors = vectorizer.fit_transform([resume_processed, job_processed])
-    similarity = cosine_similarity(vectors[0], vectors[1])
+    resume-{resume_text}
 
-    return similarity[0][0] * 100
+    job description-{job_description}
+    """
+    categories = {
+        "Irrelevant": 0,
+        "Unrelated": 25,
+        "Related": 50,
+        "Relevant": 75,
+        "Pertinent": 100
+    }
+
+    response = model.generate_content(prompt)
+    response_txt = response.text
+    response_txt = response_txt.strip()
+    response_txt = response_txt.replace("\n","")
+    score = categories.get(response_txt,0)
+    return score
 
 # Skills Scoring
 def score_skills(resume_doc, skills):
@@ -163,38 +180,57 @@ def score_education(resume_text, specific_degrees, fallback_degrees):
     return (matched_score / total_weight) * 100 if total_weight > 0 else 0 
 
 # Places Worked Scoring
-def score_places_worked(resume_text, preferred_companies, fallback_industry):
+def score_places_worked(resume_text, preferred_companies, fallback_industry, fallback_weight):
     resume_text = resume_text.lower()
     matched_score = 0
     total_weight = sum(preferred_companies.values())
 
-    # Tokenize resume text using SpaCy
-    resume_doc = nlp(resume_text)
-    resume_tokens = [token.text for token in resume_doc if token.is_alpha]
+    
+    
+    prompt = f"""
+    Extract only the company or organization names from the following resume text. 
+    Return them as a Python list with no extra text or explanation. 
+    If none are found, return an empty list.
 
-    # Generate n-grams from resume tokens (up to trigrams for flexibility)
-    n_grams = []
-    for n in range(1, 4):  # Generate unigrams, bigrams, and trigrams
-        n_grams.extend(generate_ngrams(resume_tokens, n))
+    Resume text:{resume_text}
+    """
+    response = model.generate_content(prompt)
+    extracted_companies = response.text
+    extracted_companies =extracted_companies.replace("```python","")
+    extracted_companies =extracted_companies.replace("```","")
+    extracted_companies =extracted_companies.replace("[","")
+    extracted_companies =extracted_companies.replace("]","")
+    extracted_companies =extracted_companies.replace("\n","")
+    extracted_companies =extracted_companies.replace("    ","")
+    extracted_companies =extracted_companies.replace("'","")
+    extracted_companies = extracted_companies.split(',')
+    print(extracted_companies)
 
-    def match_company(company, n_grams, threshold):
-        """Match a company against n-grams with a given similarity threshold."""
-        for n_gram in n_grams:
-            similarity = calculate_similarity(company, n_gram)
+    def match_company(company, extracted_companies, threshold):
+        # Match a company against extracted companies using similarity threshold
+        for extracted in extracted_companies:
+            similarity = calculate_similarity(company, extracted)
             if similarity > threshold:
-
                 return True
         return False
 
-    # Match preferred companies
+    # Match preferred companies using extracted company names
     for company, weight in preferred_companies.items():
         company_lower = company.lower()
-        if len(company_lower.split()) == 1:  # Single-word company
-            if match_company(company_lower, resume_tokens, 0.8):  # Lower threshold for single words
-                matched_score += weight
-        else:  # Multi-word company
-            if match_company(company_lower, n_grams, 0.8):  # Higher threshold for multi-word
-                matched_score += weight
+        if match_company(company_lower, extracted_companies , 0.8):  # Using extracted companies
+            matched_score += weight
+
+    if matched_score == 0:
+        total_weight = 5
+        prompt = f"""
+        Tell me if any of these companies - {extracted_companies} can be considered as a part of {fallback_industry} industry
+        respond only with 'YES' or 'NO' with no other text or explanation
+        """
+        response = model.generate_content(prompt)
+        response_txt = response.text
+        print(response_txt)
+        if response_txt == "YES":
+            matched_score += fallback_weight
 
     return (matched_score / total_weight) * 100 if total_weight > 0 else 0  # Scale to max 12.5%
 
@@ -439,7 +475,7 @@ def calculate_resume_results(file_path, job_description, scoring_weights):
     print("2")
     scores["education"] = score_education(resume_text, scoring_weights.specific_degrees, scoring_weights.fallback_degrees)
     print("3")
-    scores["places_worked"] = score_places_worked(resume_text, scoring_weights.preferred_companies, scoring_weights.fallback_industry)
+    scores["places_worked"] = score_places_worked(resume_text, scoring_weights.preferred_companies, scoring_weights.fallback_industry, scoring_weights.fallback_industry_weight)
     print("4")
     scores["gaps"] = score_gaps(resume_text, scoring_weights.max_gap_tolerance, scoring_weights.gap_negative_weight, scoring_weights)
     print("5")
