@@ -75,7 +75,7 @@
                                 <h6 class="card-subtitle text-muted">${job.company}</h6>
                                 <p class="card-text"><strong>Location:</strong> ${job.location}</p>
                                 <p class="card-text"><strong>Salary:</strong> ${job.salary[0]}-${job.salary[1]}</p>
-                                <button class="btn btn-warning job-button w-100 my-2">Apply Now</button>
+                                <button class="btn btn-warning job-button w-100 my-2" onclick="redirectToJobPage(${job.id})">Apply Now</button>
                                 <button class="btn btn-outline-warning job-button w-100">Save for Later</button>
                             </div>
                         </div>
@@ -97,6 +97,17 @@
                     </li>
                 `;
             }
+        }
+
+        function redirectToJobPage(job_id) {
+            const jobId = job_id
+
+            if (!jobId) {
+                alert("Job ID is missing!");
+                return;
+            }
+
+            window.location.href = `/view-job?job_id=${jobId}`;
         }
 
         // Fetch jobs on page load

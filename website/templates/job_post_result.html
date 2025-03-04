@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seek Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <h2 class="text-center">Job Seek Result</h2>
+
+        <!-- Resume File Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>Resume File</h5>
+            </div>
+            <div class="card-body">
+                <p id="resume-file" class="text-muted">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Scores Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5>Section Scores</h5>
+            </div>
+            <div class="card-body">
+                <ul id="scores-list" class="list-group">
+                    <li class="list-group-item text-muted">Loading...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5>Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <ul id="recommendations-list" class="list-group">
+                    <li class="list-group-item text-muted">Loading...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get result_id and jobseek_id from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const resultId = urlParams.get('result_id');
+            const jobseekId = urlParams.get('jobseek_id');
+
+            if (!resultId || !jobseekId) {
+                alert("Invalid request. Missing parameters.");
+                return;
+            }
+
+            // Fetch job seeker result from API
+            fetch(`/get-job-post-result?result_id=${resultId}&jobseek_id=${jobseekId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // Update Resume File
+                    const resumeFileElement = document.getElementById("resume-file");
+                    if (data.resume_file_path) {
+                        resumeFileElement.innerHTML = `<a href="/get-job-post-result?result_id=${resultId}&jobseek_id=${jobseekId}&download=true" target="_blank" class="btn btn-info">View Resume</a>`;
+                    } else {
+                        resumeFileElement.textContent = "No resume file uploaded.";
+                    }
+
+                    // Update Scores
+                    const scoresList = document.getElementById("scores-list");
+                    scoresList.innerHTML = ""; // Clear placeholder text
+                    if (data.scores && Object.keys(data.scores).length > 0) {
+                        for (const [section, score] of Object.entries(data.scores)) {
+                            const listItem = document.createElement("li");
+                            listItem.className = "list-group-item d-flex justify-content-between";
+                            listItem.innerHTML = `<strong>${section}</strong> <span>${score}</span>`;
+                            scoresList.appendChild(listItem);
+                        }
+                    } else {
+                        scoresList.innerHTML = "<li class='list-group-item text-muted'>No scores available.</li>";
+                    }
+
+                    // Update Recommendations
+                    const recommendationsList = document.getElementById("recommendations-list");
+                    recommendationsList.innerHTML = ""; // Clear placeholder text
+                    if (data.recommendations && Object.keys(data.recommendations).length > 0) {
+                        for (const [question, response] of Object.entries(data.recommendations)) {
+                            const listItem = document.createElement("li");
+                            listItem.className = "list-group-item";
+                            listItem.innerHTML = `<strong>${question}</strong><br> <span>${response}</span>`;
+                            recommendationsList.appendChild(listItem);
+                        }
+                    } else {
+                        recommendationsList.innerHTML = "<li class='list-group-item text-muted'>No recommendations available.</li>";
+                    }
+                })
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
