@@ -11,6 +11,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="static/css/jobseek_homepage.css">
+  <script src="static/javascript/job_seek_home.js"></script>
 </head>
 
 <body>
@@ -33,13 +34,13 @@
       <div class="collapse navbar-collapse" id="navbarMenu">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="#jobs" style="color: #773d0b;"
+            <a class="nav-link d-flex align-items-center" href="/view-saved-jobs" style="color: #773d0b;"
               onmouseover="this.style.color='#bf5b04'" onmouseout="this.style.color='#773d0b'">
-              <i class="fas fa-briefcase mr-2"></i>Jobs
+              <i class="fas fa-briefcase mr-2"></i>Saved Jobs
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link d-flex align-items-center" href="#resume" style="color: #773d0b;"
+            <a class="nav-link d-flex align-items-center" href="/view-resume-results" style="color: #773d0b;"
               onmouseover="this.style.color='#bf5b04'" onmouseout="this.style.color='#773d0b'">
               <i class="fas fa-file-alt mr-2"></i>Resume
             </a>
@@ -109,15 +110,15 @@
       <div class="profile-summary-box">
         <div class="profile-summary-grid">
           <div class="profile-stat">
-            <h3 class="profile-number">5</h3>
+            <h3 class="profile-number" id="resumesUploaded">5</h3>
             <p class="profile-text">Resumes Uploaded</p>
           </div>
           <div class="profile-stat">
-            <h3 class="profile-number">12</h3>
+            <h3 class="profile-number" id="jobsApplied">12</h3>
             <p class="profile-text">Jobs Applied</p>
           </div>
           <div class="profile-stat">
-            <h3 class="profile-number">8</h3>
+            <h3 class="profile-number" id="savedJobs">8</h3>
             <p class="profile-text">Saved Jobs</p>
           </div>
         </div>
@@ -131,9 +132,9 @@
         <div class="form-grid">
           <div>
             <label for="resume" class="form-label">Resume:</label>
-            <textarea id="resume" name="resume" placeholder="Paste your resume here..."
+            <textarea id="resume" name="resume_text" placeholder="Paste your resume here..."
               class="form-textarea"></textarea>
-            <input type="file" id="resume" name="resume_file" class="form-button" required>
+            <input type="file" id="resume" name="resume_file" class="form-button">
           </div>
 
           <!-- Job Description Section -->
@@ -155,47 +156,8 @@
     <section id="jobs" class="container p-4">
       <h2 class="section-heading mb-4">Jobs You May Be Interested In</h2>
       <div class="bg-white p-4 rounded shadow">
-        <div class="mb-4">
-          <input type="text" class="form-control mb-3" placeholder="Search jobs by keywords or industries">
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-warning search-button"><i class="fas fa-map-marker-alt"></i>
-              Location</button>
-            <button class="btn btn-outline-warning search-button"><i class="fas fa-clock"></i> Job Type</button>
-            <button class="btn btn-outline-warning search-button"><i class="fas fa-dollar-sign"></i> Salary
-              Range</button>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4 mb-4">
-            <div class="job-card p-3 border rounded shadow">
-              <h3 class="job-title">Software Engineer</h3>
-              <p>Company: Tech Corp</p>
-              <p>Location: Remote</p>
-              <p>Salary: $80,000/year</p>
-              <button class="btn btn-warning job-button w-100 my-2">Apply Now</button>
-              <button class="btn btn-outline-warning job-button w-100">Save for Later</button>
-            </div>
-          </div>
-          <div class="col-md-4 mb-4">
-            <div class="job-card p-3 border rounded shadow">
-              <h3 class="job-title">Data Analyst</h3>
-              <p>Company: Data Insights</p>
-              <p>Location: New York, NY</p>
-              <p>Salary: $70,000/year</p>
-              <button class="btn btn-warning job-button w-100 my-2">Apply Now</button>
-              <button class="btn btn-outline-warning job-button w-100">Save for Later</button>
-            </div>
-          </div>
-          <div class="col-md-4 mb-4">
-            <div class="job-card p-3 border rounded shadow">
-              <h3 class="job-title">Product Manager</h3>
-              <p>Company: Innovate Inc</p>
-              <p>Location: San Francisco, CA</p>
-              <p>Salary: $90,000/year</p>
-              <button class="btn btn-warning job-button w-100 my-2">Apply Now</button>
-              <button class="btn btn-outline-warning job-button w-100">Save for Later</button>
-            </div>
-          </div>
+        <div class="row" id="job-listings">
+
         </div>
         <div class="text-center mt-4">
           <a href="/view-all-job" class="explore-link">Explore All Jobs</a>

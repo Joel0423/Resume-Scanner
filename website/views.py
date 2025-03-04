@@ -1,13 +1,15 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, send_file, abort
+from sqlalchemy import func
 from flask_login import login_required, current_user
 import os
 from werkzeug.utils import secure_filename
-from .models import JobSeekerScoringWeights, Job, RecruiterJobScoringWeights, JobSeekerResult, Recruiter, User, JobApplication, JobPostResult, JobSeeker
+from .models import JobSeekerScoringWeights, Job, RecruiterJobScoringWeights, JobSeekerResult, Recruiter, User, JobApplication, JobPostResult, JobSeeker, SavedJob
 from . import db
 from .jobseeker_scoring import calculate_resume_results
 from datetime import datetime
 import google.generativeai as genai
 import json
+import fitz
 
 views =  Blueprint('views', __name__)
 
@@ -46,65 +48,12 @@ def jobseek_upload():
         if current_user.role != 'job-seeker':
             flash("Access denied.", "error")
             return redirect(url_for('views.recruiter_home'))
-
-        """ # Get the form data
-        job_description = request.form.get('job_description')
-        skills = request.form.getlist('skills-section[]')  # Assuming dynamic skills are sent as a list
-        skill_weights = request.form.getlist('skills-section_weight[]')
-        skills_data = {skills[i]: int(skill_weights[i]) for i in range(len(skills))}
-
-        specific_degrees = request.form.getlist('education_specific[]')
-        specific_degree_weights = request.form.getlist('education_specific_weight[]')
-        specific_degrees_data = {specific_degrees[i]: int(specific_degree_weights[i]) for i in range(len(specific_degrees))}
-
-        fallback_degrees = request.form.getlist('fallback_degree[]')
-        fallback_degree_weights = request.form.getlist('fallback_weight[]')
-        fallback_degrees_data = {fallback_degrees[i]: int(fallback_degree_weights[i]) for i in range(len(fallback_degrees))}
-
-        preferred_companies = request.form.getlist('places-section[]')
-        company_weights = request.form.getlist('places-section_weight[]')
-        preferred_companies_data = {preferred_companies[i]: int(company_weights[i]) for i in range(len(preferred_companies))}
-
-        fallback_industry = request.form.get('industry')
-        fallback_industry_weight = request.form.get('industry_weight', type=int)
-
-        min_years = request.form.get('min_years', type=int)
-        min_years_weight = request.form.get('min_years_weight', type=int)
-        preferred_years = request.form.get('preferred_years', type=int)
-        preferred_years_weight = request.form.get('preferred_years_weight', type=int)
-
-        max_gap_tolerance = request.form.get('max_gap', type=int)
-        gap_negative_weight = request.form.get('gap_weight', type=int)
-
-        page_ranges = request.form.getlist('pages-section[]')
-        page_range_weights = request.form.getlist('pages-section_weight[]')
-        page_ranges_data = {page_ranges[i]: int(page_range_weights[i]) for i in range(len(page_ranges))}
-
-        bullet_weight = request.form.get('bullet_weight', type=int)
-        paragraph_weight = request.form.get('paragraph_weight', type=int)
-
-        # Handle the uploaded resume file
-        resume_file = request.files.get('resume_file')
-        resume_file_path = None
-        if resume_file:
-            # Define the folder outside the current directory
-            upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..\\uploaded_resumes')
-            os.makedirs(upload_folder, exist_ok=True)
-
-            # Secure the filename and save the file
-            filename = secure_filename(resume_file.filename)
-            resume_file_path = os.path.join(upload_folder, filename)
-            resume_file.save(resume_file_path)
-            #modify to correct path after saving to store in database
-            resume_file_path = resume_file_path.replace(r"\website\..","")
-            resume_file_path = resume_file_path.replace("\\","/")
-            #resume_file_path = "file:///".join(resume_file_path) """
         
+        resume_text = request.form.get('resume_text', None)
         job_desc = request.form.get('job-description')
         resume_file = request.files.get('resume_file')
         resume_file_path = None
         if resume_file:
-            print("yessss")
             # Define the folder outside the current directory
             upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..\\uploaded_resumes')
             os.makedirs(upload_folder, exist_ok=True)
@@ -117,6 +66,27 @@ def jobseek_upload():
             resume_file_path = resume_file_path.replace(r"\website\..","")
             resume_file_path = resume_file_path.replace("\\","/")
             #resume_file_path = "file:///".join(resume_file_path)
+        elif resume_text:
+            doc = fitz.open()
+            page = doc.new_page()
+            
+            text_rect = fitz.Rect(50, 50, 550, 800)  # Define text area
+            
+            text_writer = fitz.TextWriter(text_rect)
+            text_writer.append(pos=(0,0),text=resume_text)
+            
+            page.insert_textbox(text_rect, resume_text, fontsize=12, fontname="helv", color=(0, 0, 0))
+            
+            upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..\\uploaded_resumes')
+            os.makedirs(upload_folder, exist_ok=True)
+            filename = secure_filename(current_user.name + "_resume.pdf")
+            resume_file_path = os.path.join(upload_folder, filename)
+            doc.save(resume_file_path)
+            doc.close()
+            print(f"PDF saved as {resume_file_path}")
+            #modify to correct path after saving to store in database
+            resume_file_path = resume_file_path.replace(r"\website\..","")
+            resume_file_path = resume_file_path.replace("\\","/")
         
         prompt = f"""this is a flask sql alchemy model-
          class JobSeekerScoringWeights(db.Model):
@@ -202,15 +172,14 @@ def jobseek_upload():
 
         # Save to the database
         try:
-            test = scoring_weights
             db.session.add(scoring_weights)
             db.session.commit()
             flash("Scoring weights and resume uploaded successfully.", "success")
             
             #store results in DB
-            print("HHHHHHHHHHHHHHHHHHHHHHHH")
+
             res = calculate_resume_results(resume_file_path, response_dict['job_description'], scoring_weights)
-            print("JJJJJJJJJJJJJJJJJJJJJJJJJJ")
+
             jobseeker_results = JobSeekerResult(
                 jobseeker_id = current_user.user_id,
                 scores = res['section_scores'],
@@ -227,12 +196,6 @@ def jobseek_upload():
             db.session.rollback()
             flash(f"An error occurred: {str(e)}", "error")
             return redirect(url_for('views.jobseek_upload'))
-
-    """ # GET request - render the upload form
-    if request.method == 'GET':
-        if current_user.role == 'job-seeker':
-            return render_template("job_seek_upload.html")
-        return render_template("recruiter_home.html") """
 
 
 @views.route("/jobseek-result", methods=['GET'])
@@ -729,3 +692,176 @@ def view_job_candidates():
     job_id = request.args.get("job_id", "")
 
     return render_template('view_candidates.html', job_id=job_id)
+
+@views.route('/get-jobseek-stats', methods=['GET'])
+def jobseeker_stats():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.recruiter_home'))
+    
+    # Get the current user's jobseeker_id
+    jobseeker_id = current_user.user_id
+
+    # Count entries in JobSeekerResult
+    jobseeker_result_count = db.session.query(func.count(JobSeekerResult.result_id)).filter_by(jobseeker_id=jobseeker_id).scalar()
+
+    # Count entries in JobPostResult
+    jobpost_result_count = db.session.query(func.count(JobPostResult.result_id)).filter_by(jobseeker_id=jobseeker_id).scalar()
+
+    # Sum of both results
+    total_results_count = jobseeker_result_count + jobpost_result_count
+
+    # Count entries in JobApplication
+    job_application_count = db.session.query(func.count(JobApplication.application_id)).filter_by(jobseeker_id=jobseeker_id).scalar()
+
+    # Count entries in SavedJob
+    saved_job_count = db.session.query(func.count(SavedJob.job_id)).filter_by(jobseeker_id=jobseeker_id).scalar()
+
+    # Return JSON response
+    return jsonify({
+        "total_resumes_count": total_results_count,
+        "job_application_count": job_application_count,
+        "saved_job_count": saved_job_count
+    })
+
+@views.route('/save-job', methods=['GET'])
+def save_job():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.recruiter_home'))
+    
+    job_id = request.args.get('job_id')
+
+    if not job_id:
+        return jsonify({"error": "Job ID is required"}), 400
+
+    # Check if the job is already saved
+    existing_entry = SavedJob.query.filter_by(jobseeker_id=current_user.user_id, job_id=job_id).first()
+
+    if existing_entry:
+        return jsonify({"message": "Job already saved"}), 200
+
+    # Add job to saved jobs
+    new_saved_job = SavedJob(jobseeker_id=current_user.user_id, job_id=job_id)
+    db.session.add(new_saved_job)
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "Job saved successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to save job"}), 500
+
+@views.route('/get-saved-jobs', methods=['GET'])
+def get_saved_jobs():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.recruiter_home'))
+
+    # Get the job IDs saved by the current user
+    saved_job_ids = db.session.query(SavedJob.job_id).filter_by(jobseeker_id=current_user.user_id).subquery()
+
+    # Base query: Get only saved jobs
+    query = db.session.query(Job).filter(Job.job_id.in_(saved_job_ids))
+
+    title = request.args.get("title", "")
+    location = request.args.get("location", "")
+    company = request.args.get("company", "")
+    salary_min = request.args.get("salary_min", type=int, default=0)
+    salary_max = request.args.get("salary_max", type=int, default=999999)
+    page = request.args.get("page", type=int, default=1)
+    per_page = 6  # Number of jobs per page
+
+    if title:
+        query = query.filter(Job.title.ilike(f"%{title}%"))
+    if location:
+        query = query.filter(Job.location.ilike(f"%{location}%"))
+    if company:
+        query = query.filter(Job.company.ilike(f"%{company}%"))
+    query = query.filter(
+        Job.salary_max >= salary_min,  # Ensure the job's max salary is at least the requested min_salary
+        Job.salary_min <= salary_max   # Ensure the job's min salary is at most the requested max_salary
+    )
+
+    jobs = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "jobs": [{"id": job.job_id, "title": job.title, "company": job.company, "location": job.location, "salary": [job.salary_min, job.salary_max]} for job in jobs.items],
+        "total_pages": jobs.pages,
+        "current_page": jobs.page
+    })
+
+@views.route('/view-saved-jobs', methods=['GET'])
+@login_required
+def view_saved_job():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.recruiter_home'))
+    
+    return render_template('saved_jobs.html')
+
+@views.route('/get-resume-results', methods=['GET'])
+def get_resume_results():
+    if current_user.role != 'job-seeker':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.recruiter_home'))
+    
+
+    jobseek_id = current_user.user_id
+
+    download = request.args.get('download', 'false').lower() == 'true'  # Check if 'download' is true
+    
+
+    # Query JobPostResult filtered by job_id
+    results = (
+        db.session.query(
+            JobSeeker.user_id,
+            JobSeekerResult.result_id,
+            JobSeekerResult.resume_file_path,
+            User.name,
+            User.email,
+            User.phone
+        )
+        .join(JobSeeker, JobSeekerResult.jobseeker_id == JobSeeker.user_id)
+        .join(User, JobSeeker.user_id == User.user_id)
+        .filter(JobSeekerResult.jobseeker_id == jobseek_id)  # Filter by job_id
+        .all()
+    )
+
+    # Convert results to JSON
+    results_data = [
+        {
+            "jobseek_id": result.user_id,
+            "result_id": result.result_id,
+            "name": result.name,
+            "email": result.email,
+            "phone": result.phone,
+            "resume_file_path": result.resume_file_path
+        }
+        for result in results
+    ]
+
+    # If `download` is True, return the PDF file directly
+    if download:
+        result_id = request.args.get('result_id',"")
+        matching_result = None
+        
+        for item in results_data:
+            if str(item['result_id']) == result_id:
+                matching_result = item
+                break
+
+        if matching_result:
+            if not matching_result['resume_file_path'] or not os.path.exists(matching_result['resume_file_path']):
+                abort(404, description="Resume file not found.")
+            return send_file(matching_result['resume_file_path'], as_attachment=False, mimetype='application/pdf')
+        else:
+            print("No matching result found.")
+        
+
+    return jsonify(results_data)  # Return as JSON
+
+@views.route('/view-resume-results', methods=['GET'])
+def view_resume_results():
+
+    return render_template('view_resume_results.html')

@@ -36,6 +36,7 @@ class JobSeeker(db.Model):
     job_seeker_scoring_weights = db.relationship('JobSeekerScoringWeights', backref='JobSeeker', cascade="all, delete-orphan", uselist=False)
     job_seeker_results = db.relationship('JobSeekerResult', backref='JobSeeker', cascade="all, delete-orphan", uselist=False)
     jobseeker_app = db.relationship("JobApplication", backref="JobSeeker", cascade="all, delete-orphan", uselist=False)
+    saved_job = db.relationship("SavedJob", backref="JobSeeker", cascade="all, delete-orphan", uselist=False)
 
 
     def __repr__(self):
@@ -118,6 +119,7 @@ class Job(db.Model):
     job_weights = db.relationship('RecruiterJobScoringWeights', backref='Job', cascade="all, delete-orphan")
     job_application = db.relationship("JobApplication", backref="Job", cascade="all, delete-orphan")
     job_post_results = db.relationship("JobPostResult", backref="Job", cascade="all, delete-orphan")
+    saved_job = db.relationship("SavedJob", backref="Job", cascade="all, delete-orphan")
 
 class RecruiterJobScoringWeights(db.Model):
     __tablename__ = 'RECRUITER_JOB_SCORINGWEIGHTS'
@@ -183,4 +185,12 @@ class JobPostResult(db.Model):
     total_score = db.Column(db.Integer, nullable=False)
     recommendations = db.Column(db.JSON, nullable=True)
     resume_file_path = db.Column(db.String(255), nullable=True)
+
+class SavedJob(db.Model):
+    __tablename__ = 'SAVED_JOBS'
+
+    save_id = db.Column(db.Integer, primary_key=True)
+    jobseeker_id = db.Column(db.Integer, db.ForeignKey('JOBSEEKERS.user_id', ondelete='CASCADE'), nullable=False)
+    job_id =  db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    
 
