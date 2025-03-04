@@ -7,10 +7,89 @@
     <title>Job Listings</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f9f9f9;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h2 {
+            color: #773d0b;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #863a3a;
+        }
+
+        .form-control:focus {
+            border-color: #89603a;
+            box-shadow: 0px 0px 8px rgba(134, 58, 58, 0.5);
+        }
+
+        .btn-primary {
+            background-color: #773d0b;
+            border-color: #773d0b;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #89603a;
+            border-color: #89603a;
+            transform: scale(1.05);
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #863a3a;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pagination .page-link {
+            color: #773d0b;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #773d0b;
+            color: white;
+        }
+
+        .row .col-md-3 {
+            padding: 10px;
+        }
+
+    </style>
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="container mt-4 fade-in">
         <h2 class="text-center">Job Listings</h2>
 
         <!-- Filters -->
@@ -31,7 +110,7 @@
                 <input type="number" id="max-salary" class="form-control" placeholder="Max Salary">
             </div>
         </div>
-        <button class="btn btn-primary mb-3" onclick="fetchJobs()">Search</button>
+        <button class="btn btn-primary mb-3 w-100" onclick="fetchJobs()">Search</button>
 
         <!-- Job Listings -->
         <div class="row" id="job-listings"></div>
