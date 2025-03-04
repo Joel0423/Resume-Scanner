@@ -5,7 +5,7 @@ def get_recommendations(scores, resume, job_desc):
     genai.configure(api_key="AIzaSyA-Xrl9eqmuvOuwD3VLVmr3JGA5iX4T_-8")
     model = genai.GenerativeModel("gemini-2.0-flash")
 
-    prompt = f"""Compare this resume and job description to answer the following to create a recommendation for the user. Return the response as a JSON object with keys Q1, Q2, and Q3, and the answers as the values.
+    prompt = f"""Compare this resume and job description to answer the following to create a recommendation for the user.
 
     1. What's wrong with the resume?
     2. How can it be fixed?
