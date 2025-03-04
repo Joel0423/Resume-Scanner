@@ -117,37 +117,10 @@
     <!-- Jobs Posted Section -->
     <section id="jobs-posted" class="container my-5">
       <h2 class="text-center mb-4">Jobs Posted</h2>
-      <div class="row">
-        <!-- Job Card -->
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Software Engineer</h5>
-              <p class="card-text">Skills: Java, Python</p>
-              <p class="card-text">Education: Bachelor's in Computer Science</p>
-            </div>
-          </div>
-        </div>
-        <!-- Repeat for 6 Jobs -->
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Data Scientist</h5>
-              <p class="card-text">Skills: Python, SQL</p>
-              <p class="card-text">Education: Master's in Data Science</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Project Manager</h5>
-              <p class="card-text">Skills: Agile, Scrum</p>
-              <p class="card-text">Education: MBA</p>
-            </div>
-          </div>
-        </div>
+      <div class="row" id="homepage-job-list">
+        <!-- Dynamic job cards will be inserted here -->
       </div>
+    
     </section>
 
     <!-- Candidates Section -->
@@ -197,6 +170,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="static/javascript/recruiter_homepage.js"></script>
+    <script src="static/javascript/recruiter_job_post.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          fetchJobs(1, "homepage-job-list"); // Load 3 jobs on homepage
+      });
+    </script>
+    
   </body>
 
   </html>
