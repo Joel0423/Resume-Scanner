@@ -34,6 +34,8 @@ class JobSeeker(db.Model):
 
     #rel
     job_seeker_scoring_weights = db.relationship('JobSeekerScoringWeights', backref='JobSeeker', cascade="all, delete-orphan", uselist=False)
+    job_seeker_results = db.relationship('JobSeekerResult', backref='JobSeeker', cascade="all, delete-orphan", uselist=False)
+    jobseeker_app = db.relationship("JobApplication", backref="JobSeeker", cascade="all, delete-orphan", uselist=False)
 
 
     def __repr__(self):
@@ -109,11 +111,13 @@ class Job(db.Model):
     salary_max = db.Column(db.Integer, nullable=True)
     deadline = db.Column(db.Date, nullable=False)
     description = db.Column(db.Text, nullable=False)
-    recruiter_id = db.Column(db.Integer, db.ForeignKey('RECRUITERS.user_id'), nullable=False)
+    recruiter_id = db.Column(db.Integer, db.ForeignKey('RECRUITERS.user_id',  ondelete='CASCADE'), nullable=False)
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    job_weights = db.relationship('RecruiterJobScoringWeights', backref='job', cascade="all, delete-orphan")
+    job_weights = db.relationship('RecruiterJobScoringWeights', backref='Job', cascade="all, delete-orphan")
+    job_application = db.relationship("JobApplication", backref="Job", cascade="all, delete-orphan")
+    job_post_results = db.relationship("JobPostResult", backref="Job", cascade="all, delete-orphan")
 
 class RecruiterJobScoringWeights(db.Model):
     __tablename__ = 'RECRUITER_JOB_SCORINGWEIGHTS'
@@ -152,3 +156,31 @@ class RecruiterJobScoringWeights(db.Model):
 
     def __repr__(self):
         return f"<RecruiterJobScoringWeights id={self.id} job_id={self.job_id}>"
+    
+
+class JobSeekerResult(db.Model):
+    result_id = db.Column(db.Integer, primary_key=True)
+    jobseeker_id = db.Column(db.Integer, db.ForeignKey('JOBSEEKERS.user_id', ondelete='CASCADE'), nullable=False)
+    scores = db.Column(db.JSON, nullable=True)
+    recommendations = db.Column(db.JSON, nullable=True)
+    resume_file_path = db.Column(db.String(255), nullable=True)
+
+
+class JobApplication(db.Model):
+    __tablename__ = 'JOB_APPLICATIONS'
+
+    application_id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    jobseeker_id = db.Column(db.Integer, db.ForeignKey('JOBSEEKERS.user_id', ondelete='CASCADE'), nullable=False)
+    resume_file_path = db.Column(db.String(500), nullable=False)
+
+    
+class JobPostResult(db.Model):
+    result_id = db.Column(db.Integer, primary_key=True)
+    jobseeker_id = db.Column(db.Integer, db.ForeignKey('JOBSEEKERS.user_id', ondelete='CASCADE'), nullable=False)
+    job_id =  db.Column(db.Integer, db.ForeignKey('JOBS.job_id', ondelete='CASCADE'), nullable=False)
+    scores = db.Column(db.JSON, nullable=True)
+    total_score = db.Column(db.Integer, nullable=False)
+    recommendations = db.Column(db.JSON, nullable=True)
+    resume_file_path = db.Column(db.String(255), nullable=True)
+

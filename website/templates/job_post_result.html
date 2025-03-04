@@ -61,7 +61,7 @@
             }
 
             // Fetch job seeker result from API
-            fetch(`/get-j-result?result_id=${resultId}&jobseek_id=${jobseekId}`)
+            fetch(`/get-job-post-result?result_id=${resultId}&jobseek_id=${jobseekId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
@@ -72,7 +72,7 @@
                     // Update Resume File
                     const resumeFileElement = document.getElementById("resume-file");
                     if (data.resume_file_path) {
-                        resumeFileElement.innerHTML = `<a href="/get-j-result?result_id=${resultId}&jobseek_id=${jobseekId}&download=true" target="_blank" class="btn btn-info">View Resume</a>`;
+                        resumeFileElement.innerHTML = `<a href="/get-job-post-result?result_id=${resultId}&jobseek_id=${jobseekId}&download=true" target="_blank" class="btn btn-info">View Resume</a>`;
                     } else {
                         resumeFileElement.textContent = "No resume file uploaded.";
                     }

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Listings</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Job Listings</h2>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <input type="text" id="search-title" class="form-control" placeholder="Job Title">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="search-location" class="form-control" placeholder="Location">
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="search-company" class="form-control" placeholder="Company">
+            </div>
+            <div class="col-md-3">
+                <input type="number" id="min-salary" class="form-control" placeholder="Min Salary">
+            </div>
+            <div class="col-md-3">
+                <input type="number" id="max-salary" class="form-control" placeholder="Max Salary">
+            </div>
+        </div>
+        <button class="btn btn-primary mb-3" onclick="fetchJobs()">Search</button>
+
+        <!-- Job Listings -->
+        <div class="row" id="job-listings"></div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+    </div>
+
+    <script>
+        let currentPage = 1;
+
+        function fetchJobs(page = 1) {
+            const title = document.getElementById("search-title").value;
+            const location = document.getElementById("search-location").value;
+            const company = document.getElementById("search-company").value;
+            const minSalary = document.getElementById("min-salary").value || 0;
+            const maxSalary = document.getElementById("max-salary").value || 999999;
+
+            fetch(`/get-all-jobs?title=${title}&location=${location}&company=${company}&salary_min=${minSalary}&salary_max=${maxSalary}&page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentPage = page;
+                    displayJobs(data.jobs);
+                    setupPagination(data.total_pages);
+                })
+                .catch(error => console.error("Error fetching jobs:", error));
+        }
+
+        function displayJobs(jobs) {
+            const jobList = document.getElementById("job-listings");
+            jobList.innerHTML = "";
+
+            jobs.forEach(job => {
+                const jobCard = `
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${job.title}</h5>
+                                <h6 class="card-subtitle text-muted">${job.company}</h6>
+                                <p class="card-text"><strong>Location:</strong> ${job.location}</p>
+                                <p class="card-text"><strong>Salary:</strong> ${job.salary[0]}-${job.salary[1]}</p>
+                                <button class="btn btn-warning job-button w-100 my-2" onclick="redirectToJobPage(${job.id})">Apply Now</button>
+                                <button class="btn btn-outline-warning job-button w-100">Save for Later</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                jobList.innerHTML += jobCard;
+            });
+        }
+
+        function setupPagination(totalPages) {
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+
+            for (let i = 1; i <= totalPages; i++) {
+                const activeClass = currentPage === i ? "active" : "";
+                pagination.innerHTML += `
+                    <li class="page-item ${activeClass}">
+                        <a class="page-link" href="#" onclick="fetchJobs(${i})">${i}</a>
+                    </li>
+                `;
+            }
+        }
+
+        function redirectToJobPage(job_id) {
+            const jobId = job_id
+
+            if (!jobId) {
+                alert("Job ID is missing!");
+                return;
+            }
+
+            window.location.href = `/view-job?job_id=${jobId}`;
+        }
+
+        // Fetch jobs on page load
+        fetchJobs();
+    </script>
+</body>
+
+</html>
