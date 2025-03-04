@@ -91,7 +91,7 @@ def jobseek_upload():
             resume_file_path = os.path.join(upload_folder, filename)
             resume_file.save(resume_file_path)
             #modify to correct path after saving to store in database
-            resume_file_path = resume_file_path.replace("\website\..","")
+            resume_file_path = resume_file_path.replace(r"\website\..","")
             resume_file_path = resume_file_path.replace("\\","/")
             #resume_file_path = "file:///".join(resume_file_path)
 
@@ -538,18 +538,12 @@ def store_application():
 @views.route("/job-post-result", methods=['GET'])
 @login_required
 def job_post_result():
-    if current_user.role != 'job-seeker':
-        flash("Access denied.", "error")
-        return redirect(url_for('views.recruiter_home'))
 
     return render_template("job_post_result.html")
 
 @views.route('/get-job-post-result', methods=['GET'])
 @login_required
 def get_job_post_results():
-    if current_user.role != 'job-seeker':
-        flash("Access denied.", "error")
-        return redirect(url_for('views.recruiter_home'))
     
     result_id = request.args.get('result_id')
     jobseek_id = request.args.get('jobseek_id')
@@ -580,6 +574,11 @@ def get_job_post_results():
 
 @views.route('/get-job-candidates', methods=['GET'])
 def job_candidates():
+    if current_user.role != 'recruiter':
+        flash("Access denied.", "error")
+        return redirect(url_for('views.job_seeker_home'))
+    
+
     job_id = request.args.get('job_id', type=int)  # Get job_id from request
 
     download = request.args.get('download', 'false').lower() == 'true'  # Check if 'download' is true
@@ -591,6 +590,7 @@ def job_candidates():
     # Query JobPostResult filtered by job_id
     results = (
         db.session.query(
+            JobSeeker.user_id,
             JobPostResult.result_id,
             JobPostResult.total_score,
             JobPostResult.resume_file_path,
@@ -608,6 +608,7 @@ def job_candidates():
     # Convert results to JSON
     results_data = [
         {
+            "jobseek_id": result.user_id,
             "result_id": result.result_id,
             "name": result.name,
             "email": result.email,
@@ -621,13 +622,18 @@ def job_candidates():
     # If `download` is True, return the PDF file directly
     if download:
         result_id = request.args.get('result_id',"")
-        matching_result = next((item for item in results_data if item["result_id"] == result_id), None)
         print(result_id)
+        matching_result = None
+        
+        for item in results_data:
+            if str(item['result_id']) == result_id:
+                matching_result = item
+                break
 
         if matching_result:
-            if not matching_result.resume_file_path or not os.path.exists(matching_result.resume_file_path):
+            if not matching_result['resume_file_path'] or not os.path.exists(matching_result['resume_file_path']):
                 abort(404, description="Resume file not found.")
-            return send_file(matching_result.resume_file_path, as_attachment=False, mimetype='application/pdf')
+            return send_file(matching_result['resume_file_path'], as_attachment=False, mimetype='application/pdf')
         else:
             print("No matching result found.")
         
