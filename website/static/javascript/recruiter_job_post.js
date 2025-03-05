@@ -22,6 +22,26 @@ function fetchJobs(page = 1, containerId = "job-listings") {
         .catch(error => console.error("Error fetching jobs:", error));
 }
 
+function redirectToCandidatePage(job_id) {
+    const jobId = job_id
+
+    if (!jobId) {
+        alert("Job ID is missing!");
+        return;
+    }
+
+    window.location.href = `/view-job-candidates?job_id=${jobId}`;
+}
+
+document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("candidate-button")) {
+        const jobId = event.target.getAttribute("data-id");
+        redirectToCandidatePage(jobId);
+    }
+});
+
+
+
 function displayJobs(jobs, containerId) {
     const jobList = document.getElementById(containerId);
     if (!jobList) return; // Prevent errors if the container is missing
@@ -30,13 +50,13 @@ function displayJobs(jobs, containerId) {
     jobs.forEach(job => {
         const jobCard = `
             <div class="col-md-4">
-                <div class="job-card mb-4 shadow-sm fade-in p-3">
+                <div class="job-card card mb-4 shadow-sm fade-in p-3">
                     <div class="card-body">
                         <h5 class="card-title">${job.title}</h5>
                         <h6 class="card-subtitle text-muted">${job.company}</h6>
                         <p class="card-text"><strong>Location:</strong> ${job.location}</p>
                         <p class="card-text"><strong>Salary:</strong> ${job.salary[0]} - ${job.salary[1]}</p>
-                        <button class="btn btn-warning job-button w-100 my-2" onclick="redirectToCandidatePage(${job.id})">View candidates</button>
+                        <button class="btn btn-warning candidate-button w-100 my-2" data-id="${job.id}">View candidates</button>
                     </div>
                 </div>
             </div>
@@ -44,18 +64,20 @@ function displayJobs(jobs, containerId) {
         jobList.innerHTML += jobCard;
     });
 
-     // Add the "Explore More" button after the job listings
+
+
+    // Add the "Explore More" button after the job listings
     if (jobs.length > 0) {
         const exploreMoreButton = document.createElement("div");
         exploreMoreButton.classList.add("text-center", "mt-4");
         exploreMoreButton.innerHTML = `
-            <button id="exploreMoreBtn" class="btn btn-primary px-4 py-2">Explore More</button>
+            <button id="exploreMoreBtn" class="btn btn-primary px-4 py-2">View All</button>
         `;
         jobList.parentElement.appendChild(exploreMoreButton);
 
         // Add event listener for navigation
         document.getElementById("exploreMoreBtn").addEventListener("click", function () {
-            window.location.href = "/recruiter_job_posts"; // Change this to the correct route
+            window.location.href = "/view-my-job";
         });
     }
 
