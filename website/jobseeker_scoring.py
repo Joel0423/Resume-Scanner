@@ -1,6 +1,5 @@
 import spacy
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 #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

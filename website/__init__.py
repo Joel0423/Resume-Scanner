@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
+from os import environ
 from flask_login import LoginManager
-from config import SQLALCHEMY_DATABASE_URI
 
 db = SQLAlchemy()
 
@@ -10,7 +10,7 @@ def create_app():
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = "Joe nd Maha"
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
     db.init_app(app)
     
     # views for the application
