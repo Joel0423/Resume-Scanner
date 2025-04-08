@@ -2,24 +2,14 @@
 
 ```python -m venv .venv```  
 ```pip install -r requirements.txt```  
-  
+
+create a environment variable called 'SQLALCHEMY_DATABASE_URI'  
+with value - mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}  
+replace stuff in {} with actual values of your database  
+
 inside the resume-scanner folder
-  
-create a file- config.py  
-paste this-  
-```
-DB_USERNAME = "root"
-DB_PASSWORD = ""
-DB_HOST = "localhost"
-DB_NAME = "resume_scanner_db"
-DB_PORT = "3306"
 
-SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-```  
-  
-
-#to run-
-
+#to run-  
 
 in the terminal-  
 
