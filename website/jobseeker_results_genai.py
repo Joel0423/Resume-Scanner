@@ -1,8 +1,9 @@
 import google.generativeai as genai
 import json
+from config import API_KEY
 
 def get_recommendations(scores, resume, job_desc):
-    genai.configure(api_key="AIzaSyA-Xrl9eqmuvOuwD3VLVmr3JGA5iX4T_-8")
+    genai.configure(api_key=API_KEY)
     model = genai.GenerativeModel("gemini-2.0-flash")
 
     prompt = f"""Compare this resume and job description to answer the following to create a recommendation for the user.

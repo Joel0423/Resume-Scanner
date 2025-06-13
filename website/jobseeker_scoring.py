@@ -2,7 +2,6 @@ import spacy
 
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
-#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
 from difflib import SequenceMatcher
 from flask import flash
 import re
@@ -13,9 +12,10 @@ import fitz
 import os
 
 from .jobseeker_results_genai import get_recommendations
+from config import API_KEY
 
 import google.generativeai as genai
-genai.configure(api_key="AIzaSyA-Xrl9eqmuvOuwD3VLVmr3JGA5iX4T_-8")
+genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Load Spacy NLP model
